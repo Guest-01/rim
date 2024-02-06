@@ -16,8 +16,8 @@ export default function NavBar() {
       </div>
       {/* Main Actions */}
       <ul className="menu menu-sm menu-horizontal bg-base-200 rounded-box">
-        <li><Link href="/create">일감 생성</Link></li>
-        <li><Link href="/list">일감 목록</Link></li>
+        <li><Link href="/issues/new">일감 생성</Link></li>
+        <li><Link href="/issues">일감 목록</Link></li>
       </ul>
       {/* Search and Profiles */}
       <div className="gap-4 mr-2">
