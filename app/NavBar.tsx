@@ -38,7 +38,10 @@ export default function NavBar() {
               <li><a>Logout</a></li>
             </ul>
           </div>
-          : <Link href="/login" className="btn btn-sm">로그인</Link>
+          : <div className="flex gap-2">
+            <Link href="/login" className="btn btn-sm">로그인</Link>
+            <Link href="/signup" className="btn btn-sm btn-primary">회원가입</Link>
+          </div>
         }
       </div>
     </header>

@@ -10,10 +10,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Account {
+  id             Int      @id @default(autoincrement())
+  email          String   @unique
+  password       String
+  name           String
+  role           Int      @default(0) /// 0: User, 1: Admin
+  active         Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  issuesCreated  Issue[]  @relation(name: "issuesCreated")
+  issuesAssigned Issue[]  @relation(name: "issuesAssigned")
+}
+
 model Issue {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+  author     Account? @relation(name: "issuesCreated", fields: [authorId], references: [id])
+  authorId   Int?
+  assignee   Account? @relation(name: "issuesAssigned", fields: [assigneeId], references: [id])
+  assigneeId Int?
 }
