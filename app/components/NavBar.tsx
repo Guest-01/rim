@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { deleteSession, getSession } from "./lib/auth";
-import prisma from "./lib/prisma";
+import { deleteSession, getSession } from "../lib/auth";
+import prisma from "../lib/prisma";
 import { redirect } from "next/navigation";
 
 export default async function NavBar() {
@@ -14,18 +14,18 @@ export default async function NavBar() {
     <header className="navbar border-b justify-between">
       {/* Title */}
       <div>
+        <label htmlFor="my-drawer" className="btn btn-ghost btn-square drawer-button lg:hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-5 h-5 stroke-current"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </label>
         <Link href="/" className="btn btn-ghost">
-          <span className="text-xl">Rim</span>
+          <span className="text-xl">
+            Rim.
+            <span className="mx-2 text-sm text-gray-600 font-normal">
+              <strong>R</strong>edmine <strong>Im</strong>proved.
+            </span>
+          </span>
         </Link>
-        <span className="mx-2 text-sm text-gray-600">
-          <strong>R</strong>edmine <strong>Im</strong>proved
-        </span>
       </div>
-      {/* Main Actions */}
-      <ul className="menu menu-sm menu-horizontal bg-base-200 rounded-box">
-        <li><Link href="/issues/new">일감 생성</Link></li>
-        <li><Link href="/issues">일감 목록</Link></li>
-      </ul>
       {/* Search and Profiles */}
       <div className="gap-4 mr-2">
         <input type="text" placeholder="검색" className="input input-sm input-bordered w-24 md:w-auto" />

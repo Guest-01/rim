@@ -1,5 +1,5 @@
 import { Account } from "@prisma/client"
-import { deleteSession } from "./lib/auth";
+import { deleteSession } from "../lib/auth";
 import { redirect } from "next/navigation";
 
 export default function Avatar({ account }: { account: Account }) {
