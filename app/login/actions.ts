@@ -4,6 +4,7 @@ import prisma from "@/app/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import bcrypt from "bcrypt";
+import { createSession } from "../lib/auth";
 
 export async function login(prevState: any, formData: FormData) {
   await new Promise((r) => setTimeout(r, 1000));
@@ -20,8 +21,8 @@ export async function login(prevState: any, formData: FormData) {
   const isCorrectPw = await bcrypt.compare(formData.get("password")!.toString().trim(), account.password);
   if (!isCorrectPw) return "비밀번호가 올바르지 않습니다"
 
-  return "no errors"
+  await createSession(account.id);
 
-  revalidatePath("/accounts");
-  redirect("/login");
+  revalidatePath("/", "layout");
+  redirect("/");
 }

@@ -1,7 +1,14 @@
 import Link from "next/link";
+import { deleteSession, getSession } from "./lib/auth";
+import prisma from "./lib/prisma";
+import { redirect } from "next/navigation";
 
-export default function NavBar() {
-  const isAuthenticated = false;
+export default async function NavBar() {
+  const session = await getSession();
+  let account = null;
+  if (session) {
+    account = await prisma.account.findUnique({ where: { id: session.accountId } });
+  }
 
   return (
     <header className="navbar border-b justify-between">
@@ -22,27 +29,25 @@ export default function NavBar() {
       {/* Search and Profiles */}
       <div className="gap-4 mr-2">
         <input type="text" placeholder="검색" className="input input-sm input-bordered w-24 md:w-auto" />
-        {isAuthenticated ?
-          <div className="dropdown dropdown-end">
-            <div tabIndex={0} role="button" className="btn btn-circle avatar">
-              admin
-            </div>
-            <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-200 rounded-box w-52">
-              <li>
-                <a className="justify-between">
-                  Profile
-                  <span className="badge">New</span>
-                </a>
-              </li>
-              <li><a>Settings</a></li>
-              <li><a>Logout</a></li>
-            </ul>
-          </div>
-          : <div className="flex gap-2">
-            <Link href="/login" className="btn btn-sm">로그인</Link>
-            <Link href="/signup" className="btn btn-sm btn-primary">회원가입</Link>
-          </div>
-        }
+        <div className="flex gap-2 items-center">
+          {session ?
+            // <Avatar account={account!} />
+            <>
+              <div>{account?.name}</div>
+              <form action={async () => {
+                "use server";
+                await deleteSession();
+                redirect("/login");
+              }}>
+                <button type="submit" className="btn btn-sm">로그아웃</button>
+              </form>
+            </>
+            : <>
+              <Link href="/login" className="btn btn-sm">로그인</Link>
+              <Link href="/signup" className="btn btn-sm btn-primary">회원가입</Link>
+            </>
+          }
+        </div>
       </div>
     </header>
   )
