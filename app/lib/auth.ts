@@ -29,7 +29,7 @@ export async function deleteSession() {
   cookies().delete("rim_session");
 }
 
-export async function getSession() {
+export async function getSession(): Promise<{ accountId: number; expires: Date; } | null> {
   const session = cookies().get("rim_session")?.value;
   if (!session) return null;
   return await decrypt(session);
