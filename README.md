@@ -1,4 +1,4 @@
-# Rim - Redmin Improved
+# Rim - Redmine Improved
 
 > 일감 관리 도구
 

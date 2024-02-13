@@ -18,7 +18,7 @@ export default async function NavBar() {
           <span className="text-xl">Rim</span>
         </Link>
         <span className="mx-2 text-sm text-gray-600">
-          <strong>R</strong>edmin <strong>Im</strong>proved
+          <strong>R</strong>edmine <strong>Im</strong>proved
         </span>
       </div>
       {/* Main Actions */}
