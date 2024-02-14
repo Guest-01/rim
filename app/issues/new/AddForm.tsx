@@ -12,8 +12,8 @@ export default function AddForm({ accounts }: { accounts: Account[] }) {
       <label htmlFor="title" className="label label-text">제목</label>
       <input type="text" name="title" placeholder="[Project A] 초기 기획서 작성" className="input input-sm input-bordered" />
       <label htmlFor="assignee" className="label label-text">담당자</label>
-      <select name="assignee" className="select select-bordered select-sm w-full">
-        <option selected value="null">(미정)</option>
+      <select name="assignee" className="select select-bordered select-sm w-full" defaultValue="null">
+        <option value="null">(미정)</option>
         {accounts.map(account => (
           <option key={account.id} value={account.id}>{account.name}</option>
         ))}
