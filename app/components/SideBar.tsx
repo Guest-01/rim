@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function Drawer({ children }: Readonly<{ children: React.ReactNode; }>) {
+export default function SideBar() {
   const pathname = usePathname();
   if (pathname.includes("login") || pathname.includes("signup")) {
-    return children;
+    return null;
   }
 
   const menus = [
@@ -33,36 +33,25 @@ export default function Drawer({ children }: Readonly<{ children: React.ReactNod
   ]
 
   return (
-    <div className="drawer lg:drawer-open">
-      <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content">
-        {/* Page content here */}
-        {children}
-      </div>
-      <div className="drawer-side">
-        <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
-        <ul className="menu p-4 min-w-64 min-h-full bg-base-200 text-base-content">
-          {/* Sidebar content here */}
-          {menus.map(group => {
-            return (
-              <li key={group.groupName}>
-                <details open>
-                  <summary>
-                    {group.icon}
-                    {group.groupName}
-                  </summary>
-                  <ul>
-                    {group.children.map(menu =>
-                      <li key={menu.title}>
-                        <Link href={menu.href} className={`${pathname === menu.href ? "active" : ""}`}>{menu.title}</Link>
-                      </li>)}
-                  </ul>
-                </details>
-              </li>
-            )
-          })}
-        </ul>
-      </div>
-    </div>
+    <ul className="menu p-4 min-w-64 bg-base-200 text-base-content">
+      {menus.map(group => {
+        return (
+          <li key={group.groupName}>
+            <details open>
+              <summary>
+                {group.icon}
+                {group.groupName}
+              </summary>
+              <ul>
+                {group.children.map(menu =>
+                  <li key={menu.title}>
+                    <Link href={menu.href} className={`${pathname === menu.href ? "active" : ""}`}>{menu.title}</Link>
+                  </li>)}
+              </ul>
+            </details>
+          </li>
+        )
+      })}
+    </ul>
   )
 }

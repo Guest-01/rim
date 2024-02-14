@@ -4,8 +4,15 @@ import Filter from "./Filter";
 
 export default async function Issues({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
   const issues = await prisma.issue.findMany({
-    include: { assignee: true },
-    orderBy: { [searchParams.sort as string ?? "id"]: searchParams.order ?? "desc" }
+    include: { assignee: true, author: true },
+    orderBy: { [searchParams.sort as string ?? "id"]: searchParams.order ?? "desc" },
+    where: {
+      assigneeId: searchParams.assigneeId ? parseInt(searchParams.assigneeId as string) : undefined,
+      authorId: searchParams.authorId ? parseInt(searchParams.authorId as string) : undefined,
+      title: searchParams.title ? { contains: searchParams.title as string } : undefined,
+      author: searchParams.author ? { name: { contains: searchParams.author as string } } : undefined,
+      assignee: searchParams.assignee ? { name: { contains: searchParams.assignee as string } } : undefined,
+    }
   });
 
   return (
