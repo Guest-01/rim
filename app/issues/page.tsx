@@ -1,13 +1,18 @@
 import Breadcrumbs from "../components/Breadcrumbs";
 import prisma from "../lib/prisma"
+import Filter from "./Filter";
 
-export default async function Issues() {
-  const issues = await prisma.issue.findMany({ include: { assignee: true }, orderBy: { id: "desc" } });
-  // console.log(issues);
+export default async function Issues({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+  const issues = await prisma.issue.findMany({
+    include: { assignee: true },
+    orderBy: { [searchParams.sort as string ?? "id"]: searchParams.order ?? "desc" }
+  });
+
   return (
     <>
       <Breadcrumbs tree={["일감", "일감 목록"]} />
-      <div className="card card-bordered">
+      <Filter searchParams={searchParams} />
+      <div className="card card-bordered mt-4">
         <table className="table table-sm">
           <thead>
             <tr>
