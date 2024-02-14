@@ -18,7 +18,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className={noto.className}>
         <NavBar />
         <Drawer>
-          <main className="p-2">
+          <main className="p-4 pt-0">
             {children}
           </main>
         </Drawer>
