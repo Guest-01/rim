@@ -5,6 +5,9 @@ import { usePathname } from "next/navigation";
 
 export default function Drawer({ children }: Readonly<{ children: React.ReactNode; }>) {
   const pathname = usePathname();
+  if (pathname.includes("login") || pathname.includes("signup")) {
+    return children;
+  }
 
   const menus = [
     {

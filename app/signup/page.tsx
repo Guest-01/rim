@@ -7,7 +7,7 @@ export default function SignUp() {
   const [errMsg, formAction] = useFormState(signUp, null)
 
   return (
-    <section className="card card-compact max-w-sm mx-auto bg-base-200">
+    <section className="card card-compact max-w-sm mx-auto bg-base-200 mt-4">
       <h2 className="card-title mx-auto mt-4">회원가입</h2>
       <div className="card-body">
         <form action={formAction} className="form-control">

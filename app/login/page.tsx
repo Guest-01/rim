@@ -7,7 +7,7 @@ export default function Login() {
   const [errMsg, formAction] = useFormState(login, null)
 
   return (
-    <section className="card card-compact max-w-sm mx-auto bg-base-200">
+    <section className="card card-compact max-w-sm mx-auto bg-base-200 mt-4">
       <h2 className="card-title mx-auto mt-4">로그인</h2>
       <div className="card-body">
         <form action={formAction} className="form-control">
