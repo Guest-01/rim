@@ -1,5 +1,7 @@
 import Breadcrumbs from "../components/Breadcrumbs";
 import prisma from "../lib/prisma"
+import AccountRow from "./AccountRow";
+import ConfirmDlg from "./ConfirmDlg";
 
 export default async function Accounts() {
   const accounts = await prisma.account.findMany();
@@ -16,22 +18,17 @@ export default async function Accounts() {
               <th>역할</th>
               <th>상태</th>
               <th>가입일자</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {accounts.map(account => (
-              <tr key={account.id} className="hover">
-                <td>{account.id}</td>
-                <td>{account.name}</td>
-                <td>{account.email}</td>
-                <td>{account.role ? "관리자" : "사용자"}</td>
-                <td>{account.active ? "활성" : "비활성"}</td>
-                <td>{account.createdAt.toLocaleString("ko")}</td>
-              </tr>
+              <AccountRow key={account.id} account={account} />
             ))}
           </tbody>
         </table>
       </div>
+      <ConfirmDlg />
     </>
   )
 }
