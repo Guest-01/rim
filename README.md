@@ -23,7 +23,7 @@ NextJS + TailwindCSS + Daisy UI까지는 순조롭게 진행되어 과정 생략
 
 공식문서의 [QuickStart](https://www.prisma.io/docs/getting-started/quickstart)를 참고하여 진행.
 
-```sh
+```bash
 npm install prisma --save-dev
 npx prisma init --datasource-provider sqlite
 ```
@@ -35,7 +35,7 @@ npx prisma init --datasource-provider sqlite
 이 파일 안에는 연결할 DB에 대한 정보(`datasource db`)가 들어있고, 여기에 추가로 Model을 작성할 수 있음.
 
 `prisma/schema.prisma`
-```
+```prisma
 // ... 생략
 
 datasource db {
@@ -52,7 +52,7 @@ model Issue {
 
 Model을 작성했다면, 이제 실제 DB에 반영은 아래 명령어를 통해 가능.
 
-```sh
+```bash
 npx prisma migrate dev --name init
 ```
 
@@ -150,7 +150,12 @@ model Issue {
 참고로 `bcrypt`는 기본 내장 crypto 모듈에서 흔히 사용하는 `SHA` 알고리즘이 아닌 더 강력한 `blowfish` 알고리즘을 사용한다고 함.
 
 세션은 쿠키에 JWT로 저장하는 방식을 사용. (`jose` 패키지)   
-세션 주기를 짧게(10분 내외)로 잡은 뒤 대신 미들웨어에서 페이지 이동이 일어날 때마다 갱신하는 식으로 편의성 추구.   
-그러나 아직 쿠키가 만료되었을 때 앱이 바로 인식하는 방법을 찾는 중. (revalidating server components 관련)
+세션 주기를 짧게(10분 내외)로 잡은 뒤 대신 미들웨어에서 페이지 이동이 일어날 때마다 갱신하는 식으로 편의성 추구.
+다만 세션이 종료되어 쿠키가 삭제되었을 때, 바로 로그아웃이 되지 않고 페이지 어딘가에서 `getSession`을 호출 했을 때 로그아웃이 UI에 반영됨.
+바로 반영시키는 방법이 있는지, 혹은 원래 JWT 방식이 다 그런 것인지 확인 필요.
 
-(작성중)
+### 일감 검색 필터를 URL Query String으로 구현
+
+일감 목록 페이지는 URL 표준을 따라 Query String을 이용하여 검색하거나 필터 및 정렬을 수행하게 만듬. 서버 컴포넌트로 된 페이지이기 때문에 사용자와 상호작용은 정석대로 `form` 태그를 기반으로 동작. 이때 사용자가 폼을 제출하면 페이지가 리로드되는데 입력했던 값이 남아있을 수 있도록 `searchParams`를 파싱한 후 `defaultValue` 속성에 할당함.
+
+그리고 ORM(`prisma`)의 필터 조건식(`where`)에 `undefined`를 주면 해당 `where` 조건이 무시되는 점을 이용, 마침 존재하지 않는 `searchParam`의 키를 가져오려고 하면 다행히 `undefined`가 돌아오는데, `input` 같이 사용자가 빈값을 입력할 수 있는 경우에는 `""` 빈 문자열이 들어간다. 이 부분을 직접 삼항 연산자를 통해 `undefined`로 변환해놓았음.
