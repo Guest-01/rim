@@ -1,7 +1,6 @@
 import Breadcrumbs from "../components/Breadcrumbs";
 import prisma from "../lib/prisma"
 import AccountRow from "./AccountRow";
-import ConfirmDlg from "./ConfirmDlg";
 
 export default async function Accounts() {
   const accounts = await prisma.account.findMany();
@@ -9,7 +8,7 @@ export default async function Accounts() {
     <>
       <Breadcrumbs tree={["관리자 설정", "계정 목록"]} />
       <div className="card card-bordered">
-        <table className="table table-sm">
+        <table className="table table-sm table-fixed">
           <thead>
             <tr>
               <th className="w-12">#</th>
@@ -28,7 +27,6 @@ export default async function Accounts() {
           </tbody>
         </table>
       </div>
-      <ConfirmDlg />
     </>
   )
 }

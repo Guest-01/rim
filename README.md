@@ -159,3 +159,9 @@ model Issue {
 일감 목록 페이지는 URL 표준을 따라 Query String을 이용하여 검색하거나 필터 및 정렬을 수행하게 만듬. 서버 컴포넌트로 된 페이지이기 때문에 사용자와 상호작용은 정석대로 `form` 태그를 기반으로 동작. 이때 사용자가 폼을 제출하면 페이지가 리로드되는데 입력했던 값이 남아있을 수 있도록 `searchParams`를 파싱한 후 `defaultValue` 속성에 할당함.
 
 그리고 ORM(`prisma`)의 필터 조건식(`where`)에 `undefined`를 주면 해당 `where` 조건이 무시되는 점을 이용, 마침 존재하지 않는 `searchParam`의 키를 가져오려고 하면 다행히 `undefined`가 돌아오는데, `input` 같이 사용자가 빈값을 입력할 수 있는 경우에는 `""` 빈 문자열이 들어간다. 이 부분을 직접 삼항 연산자를 통해 `undefined`로 변환해놓았음.
+
+### 재사용 가능한 Modal
+
+무언가를 삭제할 때 확인(Confirm) 모달을 띄우기 위해 모달 구현.
+
+HTML 기본 `<dialog>` 태그를 이용하였으며 스타일링은 Daisy UI의 `modal` 클래스를 활용하였음. 이 때 기본 HTML Dialog의 `.showModal()`이라는 메소드를 호출해야하기 때문에 `forwardRef`를 이용하여 `useRef()`를 통해 제어할 수 있도록 구현하였음.
