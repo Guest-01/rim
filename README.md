@@ -166,6 +166,8 @@ model Issue {
 
 HTML 기본 `<dialog>` 태그를 이용하였으며 스타일링은 Daisy UI의 `modal` 클래스를 활용하였음. 이 때 기본 HTML Dialog의 `.showModal()`이라는 DOM 메소드를 호출해야하기 때문에 `forwardRef`를 이용하여 `useRef()`를 통해 제어할 수 있도록 구현하였음.
 
+※ 추가 작업: 모달이 `table` 태그 안쪽에 있을 수 없다는 오류가 발생하여, `createPortal`로 감싸서 `document.body`쪽으로 옮겨주었음. 이때 `document`를 사용하기 위해 `useEffect`훅으로 클라이언트 렌더링 여부를 확인해야하는 과정이 있었음. `app/components/ConfirmDlg.tsx` 참고. (관련 QnA: https://stackoverflow.com/a/76308331/14834190)
+
 ### enum 대신 참조 테이블 사용
 
 원래 계정의 역할은 `Int` 타입을 마치 enum처럼 사용해서 0: 관리자, 1: 사용자 이런식으로 할당할 예정이었으나, 이렇게 하지 않고 대신 역할 테이블을 새로 만들어서 참조 관계로 만들기로 함.

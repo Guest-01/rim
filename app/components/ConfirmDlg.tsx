@@ -1,10 +1,14 @@
 "use client"
 
 import clsx from "clsx";
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 const ConfirmDlg = forwardRef<HTMLDialogElement, { title: string; content: string; onConfirm: Function; isDestructive: boolean }>(({ title, content, onConfirm, isDestructive }, ref) => {
-  return (
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true) }, []);
+
+  return mounted ? createPortal(
     <dialog ref={ref} className="modal">
       <div className="modal-box">
         <form method="dialog">
@@ -21,8 +25,9 @@ const ConfirmDlg = forwardRef<HTMLDialogElement, { title: string; content: strin
           </form>
         </div>
       </div>
-    </dialog>
-  )
+    </dialog>,
+    document.body
+  ) : null;
 })
 
 // https://stackoverflow.com/questions/52992932/component-definition-is-missing-display-name-react-display-name
