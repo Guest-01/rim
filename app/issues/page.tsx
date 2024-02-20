@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Breadcrumbs from "../components/Breadcrumbs";
 import prisma from "../lib/prisma"
 import Filter from "./Filter";
@@ -20,7 +21,7 @@ export default async function Issues({ searchParams }: { searchParams: { [key: s
       <Breadcrumbs tree={["일감", "일감 목록"]} />
       <Filter searchParams={searchParams} />
       <div className="card card-bordered mt-4">
-        <table className="table table-sm">
+        <table className="table table-sm table-fixed">
           <thead>
             <tr>
               <th className="w-12">#</th>
@@ -34,7 +35,11 @@ export default async function Issues({ searchParams }: { searchParams: { [key: s
             {issues.map(issue => (
               <tr key={issue.id} className="hover">
                 <td>{issue.id}</td>
-                <td>{issue.title}</td>
+                <td>
+                  <Link href={`/issues/${issue.id}`} className="link-hover hover:cursor-pointer">
+                    {issue.title}
+                  </Link>
+                </td>
                 <td className="text-nowrap">{issue.assignee?.name}</td>
                 <td>{issue.createdAt.toLocaleString("ko")}</td>
                 <td>{issue.updatedAt.toLocaleString("ko")}</td>
