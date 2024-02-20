@@ -15,21 +15,36 @@ model Account {
   email          String   @unique
   password       String
   name           String
-  role           Int      @default(0) /// 0: User, 1: Admin
+  role           Role     @relation(fields: [roleId], references: [id])
+  roleId         Int
   active         Boolean  @default(false)
   createdAt      DateTime @default(now())
   issuesCreated  Issue[]  @relation(name: "issuesCreated")
   issuesAssigned Issue[]  @relation(name: "issuesAssigned")
 }
 
+model Role {
+  id      Int       @id @default(autoincrement())
+  value   String    @unique
+  Account Account[]
+}
+
 model Issue {
-  id         Int      @id @default(autoincrement())
-  title      String
-  content    String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
-  author     Account? @relation(name: "issuesCreated", fields: [authorId], references: [id])
-  authorId   Int?
-  assignee   Account? @relation(name: "issuesAssigned", fields: [assigneeId], references: [id])
-  assigneeId Int?
+  id            Int         @id @default(autoincrement())
+  status        IssueStatus @relation(fields: [issueStatusId], references: [id])
+  issueStatusId Int
+  title         String
+  content       String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @default(now()) @updatedAt
+  author        Account?    @relation(name: "issuesCreated", fields: [authorId], references: [id])
+  authorId      Int?
+  assignee      Account?    @relation(name: "issuesAssigned", fields: [assigneeId], references: [id])
+  assigneeId    Int?
+}
+
+model IssueStatus {
+  id    Int     @id @default(autoincrement())
+  value String  @unique
+  Issue Issue[]
 }

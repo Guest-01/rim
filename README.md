@@ -137,12 +137,12 @@ model Issue {
 }
 ```
 
-### 회원가입 시 폼 검증
+### 계정 등록 시 폼 검증
 
-회원가입 폼을 만든 후, Server Action을 통해 우선 입력값을 검증함.   
+계정 등록 폼을 만든 후, Server Action을 통해 우선 입력값을 검증함.   
 이때, 빈 양식이 있는지 걸러내기 위해 `formData.values()`를 사용해서 빈 값이 있는지 검사했는데 `formData`에는 사용자가 입력한 값 뿐만 아니라 NextJS에서 내부적으로 삽입한 값도 존재하였음. 그래서 `formData.entries()`를 이용해 키 값과 함께 순회하면서 실제로 사용자가 입력한 폼 값만 선별적으로 검사해야했음.
 
-### 회원가입 및 로그인 시 비밀번호 해싱 및 세션 쿠키 구현
+### 계정 등록 및 로그인 시 비밀번호 해싱 및 세션 쿠키 구현
 
 `bcrypt` 패키지를 이용해서 직접 구현하기로 함.   
 원래는 `next-auth`라는 올인원 패키지를 사용하려고 했으나, 단순히 이메일/비밀번호 인증을 하기 위해 불필요하게 큰 패키지를 사용하여 보일러플레이트를 잔뜩 작성하게 되는 것이 불만이었음. 추후 써드파티 로그인(구글 로그인 등)을 많이 연동하게 된다면 모를까, 현재는 계획에 없으므로 안전한 해싱 함수 정도만 bcrypt를 이용해서 사용하고 나머지 로직은 직접 구현해보는 것으로 함.
@@ -158,10 +158,53 @@ model Issue {
 
 일감 목록 페이지는 URL 표준을 따라 Query String을 이용하여 검색하거나 필터 및 정렬을 수행하게 만듬. 서버 컴포넌트로 된 페이지이기 때문에 사용자와 상호작용은 정석대로 `form` 태그를 기반으로 동작. 이때 사용자가 폼을 제출하면 페이지가 리로드되는데 입력했던 값이 남아있을 수 있도록 `searchParams`를 파싱한 후 `defaultValue` 속성에 할당함.
 
-그리고 ORM(`prisma`)의 필터 조건식(`where`)에 `undefined`를 주면 해당 `where` 조건이 무시되는 점을 이용, 마침 존재하지 않는 `searchParam`의 키를 가져오려고 하면 다행히 `undefined`가 돌아오는데, `input` 같이 사용자가 빈값을 입력할 수 있는 경우에는 `""` 빈 문자열이 들어간다. 이 부분을 직접 삼항 연산자를 통해 `undefined`로 변환해놓았음.
+그리고 ORM(`prisma`)의 필터 조건식(`where`)에 `undefined`를 주면 해당 `where` 조건이 무시되는 점을 이용, 마침 존재하지 않는 `searchParam`의 키를 가져오려고 하면 다행히 `undefined`가 돌아와서 따로 해줄 건 없었으나 `input` 같이 사용자가 빈값을 입력할 수 있는 경우에는 `""` 빈 문자열이 들어간다. 이 부분을 직접 삼항 연산자를 통해 `undefined`로 변환해놓았음.
 
 ### 재사용 가능한 Modal
 
 무언가를 삭제할 때 확인(Confirm) 모달을 띄우기 위해 모달 구현.
 
-HTML 기본 `<dialog>` 태그를 이용하였으며 스타일링은 Daisy UI의 `modal` 클래스를 활용하였음. 이 때 기본 HTML Dialog의 `.showModal()`이라는 메소드를 호출해야하기 때문에 `forwardRef`를 이용하여 `useRef()`를 통해 제어할 수 있도록 구현하였음.
+HTML 기본 `<dialog>` 태그를 이용하였으며 스타일링은 Daisy UI의 `modal` 클래스를 활용하였음. 이 때 기본 HTML Dialog의 `.showModal()`이라는 DOM 메소드를 호출해야하기 때문에 `forwardRef`를 이용하여 `useRef()`를 통해 제어할 수 있도록 구현하였음.
+
+### enum 대신 참조 테이블 사용
+
+원래 계정의 역할은 `Int` 타입을 마치 enum처럼 사용해서 0: 관리자, 1: 사용자 이런식으로 할당할 예정이었으나, 이렇게 하지 않고 대신 역할 테이블을 새로 만들어서 참조 관계로 만들기로 함.
+
+enum을 사용하는 것 보다 확장성이 좋다는 장점이 있음. 그러나 조회할 때 일일이 `JOIN`을 해야한다는 단점이 있다. 하지만 ORM차원에서 손쉽게 `include`문으로 조인해주기 때문에 단점이 상쇄되었음.
+
+### DB Seeding
+
+위에서 enum 컬럼들을 별도 테이블로 분리하게 되어서, 기본적인 값들을 미리 넣어둘 필요가 생김. 예를 들어 역할 테이블의 경우 "관리자", "사용자"등의 값을 미리 넣어두어야 계정을 만들 때 활용할 수 있다. 이는 어플리케이션 시작부터 디폴트로 들어가는 것이 좋으므로 DB에 초기 데이터로 입력해주는 방법으로 진행.
+
+사용하고 있는 ORM에서 DB Seeding을 지원하여 참고한 후 적용함. (링크: https://www.prisma.io/docs/orm/prisma-migrate/workflows/seeding)
+
+### 참조 관계 포함하여 생성하기
+
+Prisma에서 Create할 때도 참조관계를 포함시키려면 아래와 같이 하면 된다.
+
+```typescript
+await prisma.account.create({
+  data: {
+    role: { connect: { value: formData.get("role")?.toString().trim() } }, // <-- ✔
+    email: formData.get("email")!.toString().trim(),
+    name: formData.get("username")!.toString().trim(),
+    password: await bcrypt.hash(
+      formData.get("password")!.toString().trim(),
+      10
+    ),
+  },
+});
+```
+
+
+`connect`를 쓸 경우 기존에 존재하는 Row를 연결하는 것이고, 그 밖에 `create`, `connectOrCreate` 등이 있음.
+
+### include를 이용해 참조관계를 포함하여 가져온 경우의 Typing 방법
+
+만일 DB에서 조회할 때 ORM(Prisma)의 `include`문을 통해 조인을해서 가져왔다면, 가져온 외래 필드까지 Type에 포함하기 위해 아래와 같이 해주어야 함.
+
+```typescript
+import { Prisma } from '@prisma/client'
+
+type AccountWithRole = Prisma.AccountGetPayload<{ include: { role: true } }>;
+```

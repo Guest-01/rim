@@ -11,7 +11,7 @@ export async function createIssue(prevState: any, formData: FormData) {
   for (let [k, v] of formData.entries()) {
     // formData에는 사용자가 입력한 input이 아닌 Next에서 삽입한 필드도 있기 때문에.
     if (k.startsWith("$")) continue;
-    if (!v) return "빈 양식이 있습니다"
+    if (!v) return "빈 양식이 있습니다";
   }
 
   const session = await getSession();
@@ -20,6 +20,7 @@ export async function createIssue(prevState: any, formData: FormData) {
   await prisma.issue.create({
     data: {
       title: formData.get("title")!.toString().trim(),
+      issueStatusId: parseInt(formData.get("status")!.toString()),
       authorId: session.accountId,
       assigneeId: parseInt(formData.get("assignee")!.toString()),
       content: formData.get("content")!.toString().trim(),

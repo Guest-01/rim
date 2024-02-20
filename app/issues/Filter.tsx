@@ -13,7 +13,7 @@ export default async function Filter({ searchParams }: { searchParams: { [key: s
       <div className="flex gap-2 items-center">
         <div className="label label-text">필터</div>
         <form>
-          <button className={clsx("btn btn-sm rounded-full", { "btn-secondary": isDefaultPage })}>
+          <button className={clsx("btn btn-sm rounded-full", { "btn-primary": isDefaultPage })}>
             모두
           </button>
         </form>

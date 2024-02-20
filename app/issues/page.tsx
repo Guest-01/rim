@@ -5,7 +5,7 @@ import Filter from "./Filter";
 
 export default async function Issues({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
   const issues = await prisma.issue.findMany({
-    include: { assignee: true, author: true },
+    include: { assignee: true, author: true, status: true },
     orderBy: { [searchParams.sort as string ?? "id"]: searchParams.order ?? "desc" },
     where: {
       assigneeId: searchParams.assigneeId ? parseInt(searchParams.assigneeId as string) : undefined,
@@ -26,6 +26,7 @@ export default async function Issues({ searchParams }: { searchParams: { [key: s
             <tr>
               <th className="w-12">#</th>
               <th>제목</th>
+              <th className="w-20">상태</th>
               <th className="w-24">담당자</th>
               <th className="w-44">생성일자</th>
               <th className="w-44">수정일자</th>
@@ -40,6 +41,7 @@ export default async function Issues({ searchParams }: { searchParams: { [key: s
                     {issue.title}
                   </Link>
                 </td>
+                <td className="text-nowrap">{issue.status.value}</td>
                 <td className="text-nowrap">{issue.assignee?.name}</td>
                 <td>{issue.createdAt.toLocaleString("ko")}</td>
                 <td>{issue.updatedAt.toLocaleString("ko")}</td>

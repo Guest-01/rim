@@ -37,7 +37,7 @@ export default async function NavBar() {
           </>
           : <>
             <Link href="/login" className="btn btn-sm">로그인</Link>
-            <Link href="/signup" className="btn btn-sm btn-primary">회원가입</Link>
+            <Link href="/signup" className="btn btn-sm btn-primary">계정 등록</Link>
           </>
         }
       </div>

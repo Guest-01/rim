@@ -2,24 +2,30 @@
 
 import { useFormState, useFormStatus } from "react-dom";
 import { createIssue } from "./actions";
-import { Account } from "@prisma/client";
+import { Account, IssueStatus } from "@prisma/client";
 
-export default function AddForm({ accounts }: { accounts: Account[] }) {
+export default function AddForm({ accounts, issueStatusList }: { accounts: Account[], issueStatusList: IssueStatus[] }) {
   let [errMsg, formAction] = useFormState(createIssue, null)
 
   return (
     <form action={formAction} className="form-control">
       <label htmlFor="title" className="label label-text">제목</label>
-      <input type="text" name="title" placeholder="[Project A] 초기 기획서 작성" className="input input-sm input-bordered" />
+      <input type="text" name="title" placeholder="[Project A] 초기 기획서 작성" className="input input-sm input-bordered" required />
       <label htmlFor="assignee" className="label label-text">담당자</label>
-      <select name="assignee" className="select select-bordered select-sm w-full" defaultValue="null">
+      <select name="assignee" className="select select-bordered select-sm w-full" defaultValue="null" required>
         <option value="null">(미정)</option>
         {accounts.map(account => (
           <option key={account.id} value={account.id}>{account.name}</option>
         ))}
       </select>
+      <label htmlFor="status" className="label label-text">상태</label>
+      <select name="status" className="select select-bordered select-sm w-full" defaultValue="신규" required>
+        {issueStatusList.map(status => (
+          <option key={status.id} value={status.id}>{status.value}</option>
+        ))}
+      </select>
       <label htmlFor="content" className="label label-text">내용</label>
-      <textarea name="content" className="textarea textarea-sm textarea-bordered" placeholder="# 대제목 ## 중제목 ### 소제목"></textarea>
+      <textarea name="content" rows={6} className="textarea textarea-sm textarea-bordered" placeholder="# 대제목 ## 중제목 ### 소제목"></textarea>
       <div className="my-2 text-error">{errMsg}</div>
       <ActionButtons />
     </form>
