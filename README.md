@@ -210,3 +210,7 @@ import { Prisma } from '@prisma/client'
 
 type AccountWithRole = Prisma.AccountGetPayload<{ include: { role: true } }>;
 ```
+
+### 로컬 개발용 sqlite DB를 .gitignore 처리
+
+새로 리파지토리를 `git clone`한 경우, `npx prisma db push` 혹은 `npx prisma migrate reset`을 해주면 알아서 `/prisma/dev.db`를 생성해주기 때문에, 해당 DB를 깃에 올릴 필요가 없음. 오히려 내부 데이터가 공유되어 버리기 때문에 보안상 좋지 않음. 비밀번호는 암호화 되어있고, 개발중에는 실제 정보가 아닌 더미 데이터만 입력하고 있었기 때문에 여태 푸시한 내용은 문제 없음.
