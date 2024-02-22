@@ -214,3 +214,35 @@ type AccountWithRole = Prisma.AccountGetPayload<{ include: { role: true } }>;
 ### 로컬 개발용 sqlite DB를 .gitignore 처리
 
 새로 리파지토리를 `git clone`한 경우, `npx prisma db push` 혹은 `npx prisma migrate reset`을 해주면 알아서 `/prisma/dev.db`를 생성해주기 때문에, 해당 DB를 깃에 올릴 필요가 없음. 오히려 내부 데이터가 공유되어 버리기 때문에 보안상 좋지 않음. 비밀번호는 암호화 되어있고, 개발중에는 실제 정보가 아닌 더미 데이터만 입력하고 있었기 때문에 여태 푸시한 내용은 문제 없음.
+
+### Form 제출이 성공한 경우 폼을 리셋하기
+
+> https://github.com/vercel/next.js/discussions/58448
+
+Server Action을 사용하는 경우, form을 제출해도 자동으로 페이지가 리프레쉬 되지 않는다. 따라서 기본적으로는 폼 입력값들이 남아있게 된다. 이건 폼 처리에 에러가 발생했을 경우에는 원하는 동작일 수 있지만 폼 제출이 성공적이었을 경우에는 일반적으로 입력 값들이 초기화 되는 것이 직관적이다. 이는 아래와 같이 직접 구현할 수 있다.
+
+`app/signup/page.tsx`
+```typescript
+'use client'
+
+import { useFormState, useFormStatus } from "react-dom"
+import { signUp } from "./actions"
+import { useEffect, useRef } from "react";
+
+export default function SignUp() {
+  const [state, formAction] = useFormState(signUp, null);
+  const form = useRef<HTMLFormElement>(null);
+  const radio1 = useRef<HTMLInputElement>(null);
+  const radio2 = useRef<HTMLInputElement>(null);
+
+  // 성공한 경우에는 form을 리셋. 에러가 발생하면 입력값 유지.
+  useEffect(() => {
+    if (state?.error) return;
+    form.current?.reset();
+  }, [state])
+
+  return ( // ...jsx 부분 생략
+```
+
+위의 `useEffect`가 정상적으로 동작하기 위해서는 `useFormState`에서 사용하는 `signUp` 액션에서 성공/실패 여부에 따라 결과값을 적절히 반환해줄 필요가 있는 점만 유의할 것. (`app/signup/actions.ts` 참고)
+
