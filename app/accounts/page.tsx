@@ -4,12 +4,19 @@ import prisma from "../lib/prisma"
 import AccountRow from "./AccountRow";
 
 export default async function Accounts({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
-  const accounts = await prisma.account.findMany({ include: { role: true } });
-  console.log(searchParams);
+  const accounts = await prisma.account.findMany({
+    include: { role: true }, where: {
+      role: { id: searchParams.role ? parseInt(searchParams.role as string) : undefined },
+    }
+  });
+
+  // role이 변동 가능한 목록이므로 가져와서 프리셋에 할당
+  const roles = await prisma.role.findMany();
 
   const presets = [
-    { href: "?role=0", title: "관리자" },
-    { href: "?role=1", title: "사용자" },
+    ...roles.map(role => ({ href: `?role=${role.id}`, title: role.value })),
+    // { href: "?role=1", title: "관리자" },
+    // { href: "?role=2", title: "사용자" },
     { href: "?active=true", title: "활성" },
     { href: "?active=false", title: "비활성" },
   ]
