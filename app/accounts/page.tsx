@@ -7,6 +7,7 @@ export default async function Accounts({ searchParams }: { searchParams: { [key:
   const accounts = await prisma.account.findMany({
     include: { role: true }, where: {
       role: { id: searchParams.role ? parseInt(searchParams.role as string) : undefined },
+      active: { equals: searchParams.active ? Boolean(searchParams.active) : undefined },
     }
   });
 
