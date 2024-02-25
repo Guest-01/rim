@@ -5,9 +5,10 @@ import AccountRow from "./AccountRow";
 
 export default async function Accounts({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
   const accounts = await prisma.account.findMany({
-    include: { role: true }, where: {
+    include: { role: true },
+    where: {
       role: { id: searchParams.role ? parseInt(searchParams.role as string) : undefined },
-      active: { equals: searchParams.active ? Boolean(searchParams.active) : undefined },
+      active: { equals: searchParams.active ? searchParams.active === "true" : undefined },
     }
   });
 
