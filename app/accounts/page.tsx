@@ -9,6 +9,8 @@ export default async function Accounts({ searchParams }: { searchParams: { [key:
     where: {
       role: { id: searchParams.role ? parseInt(searchParams.role as string) : undefined },
       active: { equals: searchParams.active ? searchParams.active === "true" : undefined },
+      email: { contains: searchParams.filter_by === "email" ? searchParams.filter_text as string : undefined },
+      name: { contains: searchParams.filter_by === "name" ? searchParams.filter_text as string : undefined },
     }
   });
 

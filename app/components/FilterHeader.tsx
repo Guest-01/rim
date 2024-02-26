@@ -22,20 +22,21 @@ export default function FilterHeader({ presets, selectOptions }: FilterHeaderPro
             <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm2.78-4.22a.75.75 0 0 1-1.06 0L8 9.06l-1.72 1.72a.75.75 0 1 1-1.06-1.06L6.94 8 5.22 6.28a.75.75 0 0 1 1.06-1.06L8 6.94l1.72-1.72a.75.75 0 1 1 1.06 1.06L9.06 8l1.72 1.72a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd" />
           </svg>
         </Link>}
+        {searchParams.has("filter_by") && <div className="btn btn-sm rounded-full btn-active">{searchParams.get("filter_by")}:{searchParams.get("filter_text")}</div>}
         {presets.map(preset =>
           <Link
             key={preset.href}
             href={preset.href}
-            className={clsx("btn btn-sm rounded-full", { "btn-primary": isCurrent(preset.href) })}
+            className={clsx("btn btn-sm rounded-full", { "btn-active": isCurrent(preset.href) })}
           >
             {preset.title}
           </Link>)}
       </div>
       <form className="flex gap-2 items-center">
-        <select name="filter_by" className="select select-bordered select-sm">
+        <select name="filter_by" className="select select-bordered select-sm" defaultValue={searchParams.get("filter_by") ?? undefined}>
           {selectOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.title}</option>)}
         </select>
-        <input type="text" name="filter_text" className="input input-sm input-bordered" placeholder="검색" />
+        <input type="text" name="filter_text" className="input input-sm input-bordered" placeholder="검색" defaultValue={searchParams.get("filter_text") ?? undefined} />
       </form>
     </div>
   )
