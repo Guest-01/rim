@@ -33,7 +33,7 @@ export default async function Accounts({ searchParams }: { searchParams: { [key:
   return (
     <>
       <Breadcrumbs tree={["관리자 설정", "계정 목록"]} />
-      <div className="card card-bordered">
+      <div className="card card-bordered pb-2">
         <FilterHeader presets={presets} selectOptions={selectOptions} />
         <table className="table table-sm table-fixed">
           <thead>
@@ -51,6 +51,7 @@ export default async function Accounts({ searchParams }: { searchParams: { [key:
             {accounts.map(account => (
               <AccountRow key={account.id} account={account} />
             ))}
+            {accounts.length === 0 && <tr><td colSpan={6} align="center" className="text-neutral-400">No Data</td></tr>}
           </tbody>
         </table>
       </div>
