@@ -32,7 +32,7 @@ export default async function Accounts({ searchParams }: { searchParams: { [key:
 
   return (
     <>
-      <Breadcrumbs tree={["관리자 설정", "계정 목록"]} />
+      <Breadcrumbs tree={["관리자 설정", "계정 관리"]} />
       <div className="card card-bordered pb-2">
         <FilterHeader presets={presets} selectOptions={selectOptions} />
         <table className="table table-sm table-fixed">
