@@ -44,6 +44,7 @@ export default async function Accounts({ searchParams }: { searchParams: { [key:
               <th>역할</th>
               <th>상태</th>
               <th>가입일자</th>
+              <th>메모</th>
               <th></th>
             </tr>
           </thead>
