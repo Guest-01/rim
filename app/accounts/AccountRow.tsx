@@ -32,7 +32,8 @@ export default function AccountRow({ account }: { account: AccountWithRole }) {
         ref={dlg}
         title={`${account.id}번 계정 삭제`}
         content={`${account.name} 계정을 삭제하시겠습니까?`}
-        onConfirm={() => deleteAccount(account.id)} isDestructive
+        onConfirm={() => deleteAccount(account.id)}
+        isDestructive
       />
     </>
   )
