@@ -1,6 +1,6 @@
-import Breadcrumbs from "../components/Breadcrumbs";
-import FilterHeader from "../components/FilterHeader";
-import prisma from "../lib/prisma"
+import Breadcrumbs from "../../components/Breadcrumbs";
+import FilterHeader from "../../components/FilterHeader";
+import prisma from "../../lib/prisma"
 import AccountRow from "./AccountRow";
 
 export default async function Accounts({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {

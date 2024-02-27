@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import prisma from "../lib/prisma";
+import prisma from "../../lib/prisma";
 
 export async function activate(accountId: number) {
   await prisma.account.update({
@@ -9,11 +9,11 @@ export async function activate(accountId: number) {
     data: { active: true }
   });
 
-  revalidatePath("/accounts");
+  revalidatePath("/admin/accounts");
 }
 
 export async function deleteAccount(accountId: number) {
   await prisma.account.delete({ where: { id: accountId } });
 
-  revalidatePath("/accounts");
+  revalidatePath("/admin/accounts");
 }

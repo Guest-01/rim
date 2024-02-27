@@ -7,10 +7,14 @@ export default async function Issue({ params }: { params: { id: string } }) {
 
   return (
     <>
-      <Breadcrumbs tree={["일감", "일감 목록", `#${params.id}`]} />
+      <Breadcrumbs tree={["일감", `#${params.id}`]} />
       <article className="card card-bordered card-compact">
         <h2 className="card-title px-4 mt-2">
-          <div className={clsx("badge", { "badge-primary": issue?.status.value === "진행중" })}>
+          <div className={clsx("badge", {
+            "badge-neutral": issue?.status.value === "신규",
+            "badge-primary": issue?.status.value === "진행중",
+            "badge-outline": issue?.status.value === "완료",
+          })}>
             {issue?.status.value}
           </div>
           {issue?.title}

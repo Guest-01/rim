@@ -31,6 +31,6 @@ export async function editAccount(prevState: any, formData: FormData) {
     return { error: "알 수 없는 DB 오류입니다" };
   }
 
-  revalidatePath("/accounts");
+  revalidatePath("/admin/accounts");
   return { error: null };
 }
