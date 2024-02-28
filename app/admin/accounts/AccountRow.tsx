@@ -22,8 +22,8 @@ export default function AccountRow({ account }: { account: AccountWithRole }) {
           {account.active ? "활성" : "비활성"}
           {account.active ? null : <button className="btn btn-xs btn-info text-base-100" onClick={() => activate(account.id)}>활성화</button>}
         </td>
-        <td className="text-nowrap">{account.createdAt.toLocaleString("ko")}</td>
         <td className="text-nowrap">{account.description}</td>
+        <td className="text-nowrap">{account.createdAt.toLocaleString("ko")}</td>
         <td className="text-nowrap flex gap-2 items-center">
           <Link href={`/admin/accounts/${account.id}`} className="btn btn-xs">수정</Link>
           <button className="btn btn-xs btn-error text-base-100" onClick={() => dlg.current?.showModal()}>삭제</button>

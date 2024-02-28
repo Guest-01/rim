@@ -3,7 +3,7 @@ import FilterHeader from "@/app/components/FilterHeader";
 import prisma from "@/app/lib/prisma"
 
 export default async function ProjectsAdmin() {
-  const projects = await prisma.project.findMany();
+  const projects = await prisma.project.findMany({ include: { _count: { select: { members: true, issues: true } } } });
 
   const presets: { href: string; title: string; } | never[] = [
     // { href: "?", title: "a" },
@@ -26,9 +26,10 @@ export default async function ProjectsAdmin() {
             <tr>
               <th className="w-12">#</th>
               <th>프로젝트명</th>
-              <th>한줄요약</th>
+              <th>한줄 요약</th>
               <th>멤버수</th>
-              <th>생성일자</th>
+              <th>하위 일감 수</th>
+              <th>생성 일자</th>
               <th></th>
             </tr>
           </thead>
@@ -37,11 +38,15 @@ export default async function ProjectsAdmin() {
               <td>{project.id}</td>
               <td>{project.title}</td>
               <td>{project.subtitle}</td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td>{project._count.members}명</td>
+              <td>{project._count.issues}개</td>
+              <td>{project.createdAt.toLocaleString("ko")}</td>
+              <td className="space-x-2">
+                <button className="btn btn-xs">수정</button>
+                <button className="btn btn-xs btn-error text-base-100">삭제</button>
+              </td>
             </tr>)}
-            {projects.length === 0 && <tr><td colSpan={6} align="center" className="text-neutral-400">No Data</td></tr>}
+            {projects.length === 0 && <tr><td colSpan={7} align="center" className="text-neutral-400">No Data</td></tr>}
           </tbody>
         </table>
       </div>

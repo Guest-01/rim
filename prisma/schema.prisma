@@ -54,9 +54,10 @@ model IssueStatus {
 }
 
 model Project {
-  id       Int       @id @default(autoincrement())
-  title    String    @unique
-  subtitle String?
-  members  Account[]
-  Issues   Issue[]
+  id        Int       @id @default(autoincrement())
+  title     String    @unique
+  subtitle  String?
+  members   Account[]
+  issues    Issue[]
+  createdAt DateTime  @default(now())
 }
