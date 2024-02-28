@@ -18,6 +18,11 @@ async function main() {
     update: {},
     create: { value: "신규" },
   });
+  const pending = await prisma.issueStatus.upsert({
+    where: { value: "대기" },
+    update: {},
+    create: { value: "대기" },
+  });
   const onprogress = await prisma.issueStatus.upsert({
     where: { value: "진행중" },
     update: {},
@@ -28,7 +33,7 @@ async function main() {
     update: {},
     create: { value: "완료" },
   });
-  console.log({ admin, user, _new, onprogress, done });
+  console.log({ admin, user, _new, pending, onprogress, done });
 }
 
 main()

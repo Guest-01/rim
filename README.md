@@ -246,3 +246,45 @@ export default function SignUp() {
 
 위의 `useEffect`가 정상적으로 동작하기 위해서는 `useFormState`에서 사용하는 `signUp` 액션에서 성공/실패 여부에 따라 결과값을 적절히 반환해줄 필요가 있는 점만 유의할 것. (`app/signup/actions.ts` 참고)
 
+### 기획 변경 `20204.02.28`
+
+1. 일감은 상위 대분류 "프로젝트"에 소속됨.
+2. 계정은 소속된 프로젝트에 따라 하위 일감만 보여지게 됨.
+3. 프로젝트 관리에서 소속 계정을 설정.
+4. 일감의 담당자는 두가지 방법으로 결정됨:
+  - 작성자가 일감을 특정 계정에 "할당"하면 해당 계정의 "대기 일감"에 들어가고 "수락"하여 "내 일감"으로 넘어감.
+  - "모든 일감"에서 담당자가 없는 일감에 "입찰"하여 "대기 일감"에 들어가고 작성자가 "수락"하면 "내 일감"으로 넘어감.
+
+위 기획에 맞추어 DB 모델링부터 다시 변경.
+
+### ORM(Prisma)에서 Many-to-Many 관계 설정하기
+
+> ...We recommend using implicit m-n-relations, where Prisma ORM automatically generates the relation table in the underlying database. [(링크)](https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations#relation-tables)
+
+명시적으로 m-n 관계테이블을 생성하기보다는 Prisma에게 맡기는 것을 권장한다고 함.
+
+아래처럼 서로간의 Array 컬럼을 만들면 됨.
+
+```prisma
+model Account {
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  password       String
+  name           String
+  role           Role      @relation(fields: [roleId], references: [id])
+  roleId         Int
+  active         Boolean   @default(false)
+  description    String?
+  createdAt      DateTime  @default(now())
+  issuesCreated  Issue[]   @relation(name: "issuesCreated")
+  issuesAssigned Issue[]   @relation(name: "issuesAssigned")
+  projects       Project[]
+}
+
+model Project {
+  id       Int       @id @default(autoincrement())
+  title    String    @unique
+  subtitle String?
+  members  Account[]
+}
+```

@@ -16,9 +16,6 @@ export default async function Issues({ searchParams }: { searchParams: { [key: s
     },
   });
 
-  console.log(issues);
-
-
   const status = await prisma.issueStatus.findMany();
   const presets = [
     { href: `?assignee_id=null`, title: "담당 미정" },
