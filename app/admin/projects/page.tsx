@@ -1,6 +1,7 @@
 import Breadcrumbs from "@/app/components/Breadcrumbs";
 import FilterHeader from "@/app/components/FilterHeader";
 import prisma from "@/app/lib/prisma"
+import ActionsColumn from "./ActionsColumn";
 
 export default async function ProjectsAdmin() {
   const projects = await prisma.project.findMany({ include: { _count: { select: { members: true, issues: true } } } });
@@ -41,10 +42,7 @@ export default async function ProjectsAdmin() {
               <td>{project._count.members}명</td>
               <td>{project._count.issues}개</td>
               <td>{project.createdAt.toLocaleString("ko")}</td>
-              <td className="space-x-2">
-                <button className="btn btn-xs">수정</button>
-                <button className="btn btn-xs btn-error text-base-100">삭제</button>
-              </td>
+              <ActionsColumn projectId={project.id} projectTitle={project.title} />
             </tr>)}
             {projects.length === 0 && <tr><td colSpan={7} align="center" className="text-neutral-400">No Data</td></tr>}
           </tbody>
