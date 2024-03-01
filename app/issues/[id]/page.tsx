@@ -36,6 +36,49 @@ export default async function Issue({ params }: { params: { id: string } }) {
           </p>
         </div>
       </article>
+      <div className="my-2"></div>
+      <div className="card card-bordered card-compact">
+        <div className="card-body">
+          <span>담당자 대기</span>
+          <div className="card-actions items-center">
+            <button className="btn btn-sm">직접 담당</button>
+            <button className="btn btn-sm">담당 신청</button>
+            <button className="btn btn-sm">담당 수락</button>
+            <button className="btn btn-sm">담당 거절</button>
+            <div className="avatar-group -space-x-4 rtl:space-x-reverse">
+              <div className="avatar placeholder">
+                <div className="bg-neutral text-neutral-content rounded-full w-8">
+                  <span className="text-xs">AB</span>
+                </div>
+              </div>
+              <div className="avatar placeholder">
+                <div className="bg-neutral text-neutral-content rounded-full w-8">
+                  <span className="text-xs">CD</span>
+                </div>
+              </div>
+              <div className="avatar placeholder">
+                <div className="bg-neutral text-neutral-content rounded-full w-8">
+                  <span className="text-xs">EF</span>
+                </div>
+              </div>
+              <div className="avatar placeholder">
+                <div className="w-8 bg-neutral text-neutral-content">
+                  <span>+99</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="my-2"></div>
+      <div className="card card-bordered card-compact">
+        <div className="card-body">
+          <form action="" className="form-control">
+            <textarea name="comment" className="textarea textarea-sm textarea-bordered" placeholder="댓글 입력" />
+            <button type="submit" className="btn btn-sm mt-2">댓글 등록</button>
+          </form>
+        </div>
+      </div>
     </>
   )
 }
