@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Breadcrumbs from "../components/Breadcrumbs";
 import { getSession } from "../lib/auth";
 import prisma from "../lib/prisma";
@@ -27,6 +28,7 @@ export default async function Projects() {
               <p>{project.subtitle}</p>
               <div className="card-actions justify-end">
                 <button className="btn btn-sm">하위 {project._count.issues}개 일감 보기</button>
+                <Link href={`/issues/new?project_id=${project.id}`} className="btn btn-sm btn-primary">하위 일감 만들기</Link>
               </div>
             </div>
           </section>)}
