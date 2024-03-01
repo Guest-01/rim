@@ -3,23 +3,27 @@ import prisma from "@/app/lib/prisma";
 import clsx from "clsx";
 
 export default async function Issue({ params }: { params: { id: string } }) {
-  const issue = await prisma.issue.findUnique({ where: { id: parseInt(params.id) }, include: { author: true, assignee: true, status: true } });
+  const issue = await prisma.issue.findUnique({
+    where: { id: parseInt(params.id) },
+    include: { author: true, assignee: true, status: true, project: true }
+  });
 
   return (
     <>
       <Breadcrumbs tree={["일감", `#${params.id}`]} />
       <article className="card card-bordered card-compact">
-        <h2 className="card-title px-4 mt-2">
-          <div className={clsx("badge", {
-            "badge-neutral": issue?.status.value === "신규",
-            "badge-primary": issue?.status.value === "진행중",
-            "badge-outline": issue?.status.value === "완료",
-          })}>
-            {issue?.status.value}
-          </div>
-          {issue?.title}
-        </h2>
         <div className="card-body">
+          <div className="text-xs">프로젝트: {issue?.project?.title}</div>
+          <h2 className="card-title">
+            <div className={clsx("badge", {
+              "badge-neutral": issue?.status.value === "신규",
+              "badge-primary": issue?.status.value === "진행중",
+              "badge-outline": issue?.status.value === "완료",
+            })}>
+              {issue?.status.value}
+            </div>
+            {issue?.title}
+          </h2>
           <div className="flex gap-4 lg:gap-32">
             <ul>
               <li>작성자: {issue?.author?.name}</li>
