@@ -2,13 +2,32 @@
 
 import { useFormState, useFormStatus } from "react-dom";
 import { createIssue } from "./actions";
-import { Account, IssueStatus } from "@prisma/client";
+import { Account, IssueStatus, Project } from "@prisma/client";
 
-export default function AddForm({ accounts, issueStatusList }: { accounts: Account[], issueStatusList: IssueStatus[] }) {
+type Props = {
+  projects: Project[],
+  selectedProjectId?: string,
+  accounts: Account[],
+  issueStatusList: IssueStatus[]
+}
+
+export default function AddForm({ projects, selectedProjectId, accounts, issueStatusList }: Props) {
   let [errMsg, formAction] = useFormState(createIssue, null)
+
+  let parsedProjectId;
+  if (selectedProjectId) {
+    parsedProjectId = parseInt(selectedProjectId);
+  }
 
   return (
     <form action={formAction} className="form-control">
+      <label htmlFor="project" className="label label-text">프로젝트</label>
+      <select name="project" className="select select-bordered select-sm w-full" defaultValue={parsedProjectId ?? "null"} required>
+        <option value="null">소속 없음</option>
+        {projects.map(project => (
+          <option key={project.id} value={project.id}>{project.title}</option>
+        ))}
+      </select>
       <label htmlFor="title" className="label label-text">제목</label>
       <input type="text" name="title" placeholder="[Project A] 초기 기획서 작성" className="input input-sm input-bordered" required />
       <label htmlFor="assignee" className="label label-text">담당자</label>
@@ -25,7 +44,7 @@ export default function AddForm({ accounts, issueStatusList }: { accounts: Accou
         ))}
       </select>
       <label htmlFor="content" className="label label-text">내용</label>
-      <textarea name="content" rows={6} className="textarea textarea-sm textarea-bordered" placeholder="# 대제목 ## 중제목 ### 소제목"></textarea>
+      <textarea name="content" rows={6} className="textarea textarea-sm textarea-bordered" placeholder="# 대제목 ## 중제목 ### 소제목" defaultValue=""></textarea>
       <div className="my-2 text-error">{errMsg}</div>
       <ActionButtons />
     </form>

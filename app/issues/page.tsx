@@ -5,7 +5,7 @@ import FilterHeader from "../components/FilterHeader";
 
 export default async function Issues({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
   const issues = await prisma.issue.findMany({
-    include: { assignee: true, author: true, status: true },
+    include: { assignee: true, author: true, status: true, project: true },
     orderBy: { [searchParams.sort as string ?? "id"]: searchParams.order ?? "desc" },
     where: {
       issueStatusId: { equals: searchParams.status ? parseInt(searchParams.status as string) : undefined },
@@ -36,6 +36,7 @@ export default async function Issues({ searchParams }: { searchParams: { [key: s
           <thead>
             <tr>
               <th className="w-12">#</th>
+              <th>프로젝트</th>
               <th>제목</th>
               <th>상태</th>
               <th>담당자</th>
@@ -46,6 +47,7 @@ export default async function Issues({ searchParams }: { searchParams: { [key: s
             {issues.map(issue => (
               <tr key={issue.id} className="hover">
                 <td>{issue.id}</td>
+                <td>{issue.project?.title}</td>
                 <td>
                   <Link href={`/issues/${issue.id}`} className="link-hover hover:cursor-pointer">
                     {issue.title}

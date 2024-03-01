@@ -9,8 +9,9 @@ export async function createIssue(prevState: any, formData: FormData) {
   await new Promise((r) => setTimeout(r, 1000));
 
   for (let [k, v] of formData.entries()) {
+    console.log(k, v);
     // formData에는 사용자가 입력한 input이 아닌 Next에서 삽입한 필드도 있기 때문에.
-    if (k.startsWith("$")) continue;
+    if (k.startsWith("$") || k.startsWith("content")) continue;
     if (!v) return "빈 양식이 있습니다";
   }
 
@@ -19,6 +20,7 @@ export async function createIssue(prevState: any, formData: FormData) {
 
   await prisma.issue.create({
     data: {
+      projectId: parseInt(formData.get("project")!.toString()),
       title: formData.get("title")!.toString().trim(),
       issueStatusId: parseInt(formData.get("status")!.toString()),
       authorId: session.accountId,
