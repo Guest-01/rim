@@ -7,7 +7,7 @@ export default async function AccountDetail({ params }: { params: { id: string }
   return (
     <>
       <Breadcrumbs tree={["관리자 설정", "계정 관리", `${params.id}번 계정`]} />
-      <div className="card card-bordered lg:max-w-sm px-4 py-2 mx-auto">
+      <div className="card card-bordered lg:max-w-sm px-4 py-2">
         <AccountEditForm account={account} />
       </div>
     </>

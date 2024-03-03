@@ -3,6 +3,7 @@
 import { Prisma } from "@prisma/client"
 import Link from "next/link";
 import { useFormState, useFormStatus } from "react-dom";
+import { editProject } from "./actions";
 
 type ProjectWithOthers = Prisma.ProjectGetPayload<{ include: { issues: true, members: true } }>;
 
