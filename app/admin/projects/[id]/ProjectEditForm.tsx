@@ -1,20 +1,28 @@
 "use client"
 
-import { Prisma } from "@prisma/client"
+import { Account, Prisma } from "@prisma/client"
 import Link from "next/link";
 import { useFormState, useFormStatus } from "react-dom";
 import { editProject } from "./actions";
+import clsx from "clsx";
+import { useState } from "react";
 
 type ProjectWithOthers = Prisma.ProjectGetPayload<{ include: { issues: true, members: true } }>;
 
-export default function ProjectEditForm({ project }: { project: ProjectWithOthers }) {
+export default function ProjectEditForm({ project, accounts }: { project: ProjectWithOthers; accounts: Account[] }) {
   const [state, formAction] = useFormState(editProject, null)
+  const [current, setCurrent] = useState(project.members);
+
   return (
     <>
+      <div role="alert" className={clsx("alert alert-success text-base-100 mx-auto my-2", { "hidden": !state || state.error })}>
+        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <span>프로젝트 정보가 수정되었습니다</span>
+      </div>
       <form action={formAction} className="form-control">
         <input type="hidden" name="id" defaultValue={project.id} />
         <label htmlFor="title" className="label">
-          <span className="label-text">프로젝트명</span>
+          <span className="label-text">프로젝트명*</span>
           <input type="title" name="title" className="input input-sm input-bordered" defaultValue={project.title} />
         </label>
         <label htmlFor="subtitle" className="label">
