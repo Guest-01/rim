@@ -16,7 +16,7 @@ const ConfirmDlg = forwardRef<HTMLDialogElement, { title: string; content: strin
           <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
         </form>
         <h3 className="font-bold text-lg">{title}</h3>
-        <p className="py-4">{content}</p>
+        <div className="py-4">{content}</div>
         <div className="modal-action">
           <form method="dialog" className="flex gap-2">
             {/* if there is a button in form, it will close the modal */}

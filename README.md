@@ -288,3 +288,27 @@ model Project {
   members  Account[]
 }
 ```
+
+### many-to-many 관계에서 여러 관계를 연결하거나 관계를 모두 없애는 방법
+
+멤버를 여럿 추가하고 싶은 경우, `connect`에 배열을 전달하면 된다. 이때 기준이 될 필드(`id`)를 필드로 가지는 오브젝트 배열을 전달해야 함.
+
+반대로 멤버를 모두 없애고 싶은 경우 `set`를 사용. (`connect`를 `undefined`로 하면 기존 관계가 유지됨) ([참고](https://github.com/prisma/prisma/issues/5946#issuecomment-795361732))
+
+`app/admin/projects/[id]/actions.ts`
+```typescript
+ try {
+    await prisma.project.update({
+      where: { id: parseInt(formData.get("id") as string) },
+      data: {
+        title: formData.get("title")?.toString().trim(),
+        subtitle: formData.get("subtitle")?.toString().trim(),
+        members: {
+          connect: formData.get("members")?.toString() === "" ? undefined : formData.get("members")?.toString().split(",").map(str => ({ id: parseInt(str) })),
+          set: formData.get("members")?.toString() === "" ? [] : undefined
+        },
+      }
+    })
+  } catch (e) {
+    //...후략
+ ```

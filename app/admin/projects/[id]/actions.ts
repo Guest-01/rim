@@ -9,7 +9,7 @@ export async function editProject(prevState: any, formData: FormData) {
 
   for (let [k, v] of formData.entries()) {
     // formData에는 사용자가 입력한 input이 아닌 Next에서 삽입한 필드도 있기 때문에.
-    if (k.startsWith("$") || k === "subtitle") continue;
+    if (k.startsWith("$") || k === "subtitle" || k === "members") continue;
     if (!v) return { error: "빈 양식이 있습니다" };
   }
 
@@ -19,6 +19,10 @@ export async function editProject(prevState: any, formData: FormData) {
       data: {
         title: formData.get("title")?.toString().trim(),
         subtitle: formData.get("subtitle")?.toString().trim(),
+        members: {
+          connect: formData.get("members")?.toString() === "" ? undefined : formData.get("members")?.toString().split(",").map(str => ({ id: parseInt(str) })),
+          set: formData.get("members")?.toString() === "" ? [] : undefined
+        },
       }
     })
   } catch (e) {

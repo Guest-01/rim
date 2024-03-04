@@ -5,13 +5,16 @@ import Link from "next/link";
 import { useFormState, useFormStatus } from "react-dom";
 import { editProject } from "./actions";
 import clsx from "clsx";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import ConfirmDlg from "@/app/components/ConfirmDlg";
 
 type ProjectWithOthers = Prisma.ProjectGetPayload<{ include: { issues: true, members: true } }>;
 
 export default function ProjectEditForm({ project, accounts }: { project: ProjectWithOthers; accounts: Account[] }) {
   const [state, formAction] = useFormState(editProject, null)
   const [current, setCurrent] = useState(project.members);
+  const [newCurrent, setNewCurrent] = useState<string[]>();
+  const dlgRef = useRef<HTMLDialogElement>(null)
 
   return (
     <>
@@ -32,13 +35,14 @@ export default function ProjectEditForm({ project, accounts }: { project: Projec
         <label htmlFor="members" className="label">
           <span className="label-text self-start">멤버</span>
           <div className="flex flex-col join join-vertical">
-            <select name="members" multiple className="select select-sm select-bordered w-32 join-item">
-              {project.members.map(member =>
+            <select multiple className="select select-sm select-bordered w-32 join-item">
+              {current.map(member =>
                 <option key={member.id} value={member.id}>{member.name}</option>
               )}
             </select>
-            <div className="btn btn-xs join-item">수정</div>
+            <div className="btn btn-xs join-item" onClick={() => dlgRef.current?.showModal()}>수정</div>
           </div>
+          <input type="hidden" name="members" defaultValue={current.map(member => member.id).toString()} />
         </label>
         <div className="my-2 text-center text-error">{state?.error}</div>
         <SubmitBtn />
@@ -49,6 +53,29 @@ export default function ProjectEditForm({ project, accounts }: { project: Projec
           뒤로가기
         </Link>
       </form>
+      <ConfirmDlg
+        ref={dlgRef}
+        title={`${project.title} 멤버 수정`}
+        // @ts-ignore
+        content={
+          <label htmlFor="accounts" className="label">
+            <span className="label-text self-start">새로운 멤버</span>
+            <select name="accounts" multiple className="select select-sm select-bordered w-32 join-item" value={newCurrent}
+              onChange={(e) => {
+                const value = Array.from(e.target.selectedOptions, option => option.value);
+                setNewCurrent(value);
+              }}
+            >
+              {accounts.map(account =>
+                <option key={account.id} value={account.id}>{account.name}</option>
+              )}
+            </select>
+          </label>
+        }
+        onConfirm={() => {
+          setCurrent(accounts.filter(account => newCurrent?.includes(account.id.toString())));
+        }}
+      />
     </>
   )
 }
