@@ -1,19 +1,23 @@
 import Breadcrumbs from "@/app/components/Breadcrumbs";
 import prisma from "@/app/lib/prisma";
 import clsx from "clsx";
+import AssignCard from "./AssignCard";
+import { getSession } from "@/app/lib/auth";
 
 export default async function Issue({ params }: { params: { id: string } }) {
-  const issue = await prisma.issue.findUnique({
+  const issue = await prisma.issue.findUniqueOrThrow({
     where: { id: parseInt(params.id) },
-    include: { author: true, assignee: true, status: true, project: true }
+    include: { author: true, assignee: true, status: true, project: true, candidates: true }
   });
+
+  const session = await getSession();
 
   return (
     <>
       <Breadcrumbs tree={["일감", `#${params.id}`]} />
       <article className="card card-bordered card-compact">
         <div className="card-body">
-          <div className="text-xs">프로젝트: {issue?.project?.title}</div>
+          <div className="text-xs">상위 프로젝트: {issue?.project?.title}</div>
           <h2 className="card-title">
             <div className={clsx("badge", {
               "badge-neutral": issue?.status.value === "신규",
@@ -40,40 +44,12 @@ export default async function Issue({ params }: { params: { id: string } }) {
           </p>
         </div>
       </article>
-      <div className="my-2"></div>
-      <div className="card card-bordered card-compact">
-        <div className="card-body">
-          <span>담당자 대기</span>
-          <div className="card-actions items-center">
-            <button className="btn btn-sm">직접 담당</button>
-            <button className="btn btn-sm">담당 신청</button>
-            <button className="btn btn-sm">담당 수락</button>
-            <button className="btn btn-sm">담당 거절</button>
-            <div className="avatar-group -space-x-4 rtl:space-x-reverse">
-              <div className="avatar placeholder">
-                <div className="bg-neutral text-neutral-content rounded-full w-8">
-                  <span className="text-xs">AB</span>
-                </div>
-              </div>
-              <div className="avatar placeholder">
-                <div className="bg-neutral text-neutral-content rounded-full w-8">
-                  <span className="text-xs">CD</span>
-                </div>
-              </div>
-              <div className="avatar placeholder">
-                <div className="bg-neutral text-neutral-content rounded-full w-8">
-                  <span className="text-xs">EF</span>
-                </div>
-              </div>
-              <div className="avatar placeholder">
-                <div className="w-8 bg-neutral text-neutral-content">
-                  <span>+99</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {session &&
+        <>
+          <div className="my-2"></div>
+          <AssignCard issue={issue} session={session} />
+        </>
+      }
       <div className="my-2"></div>
       <div className="card card-bordered card-compact">
         <div className="card-body">

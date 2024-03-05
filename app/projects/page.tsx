@@ -10,7 +10,6 @@ export default async function Projects() {
     include: { _count: { select: { issues: true } } }
   });
 
-  console.log(projects)
   return (
     <>
       <Breadcrumbs tree={["프로젝트", "내 프로젝트"]} />

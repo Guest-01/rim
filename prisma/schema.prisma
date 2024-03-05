@@ -22,6 +22,7 @@ model Account {
   createdAt      DateTime  @default(now())
   issuesCreated  Issue[]   @relation(name: "issuesCreated")
   issuesAssigned Issue[]   @relation(name: "issuesAssigned")
+  issuesApplied  Issue[]   @relation(name: "issuesApplied")
   projects       Project[]
 }
 
@@ -45,6 +46,7 @@ model Issue {
   authorId      Int?
   assignee      Account?    @relation(name: "issuesAssigned", fields: [assigneeId], references: [id])
   assigneeId    Int?
+  candidates    Account[]   @relation(name: "issuesApplied")
 }
 
 model IssueStatus {
