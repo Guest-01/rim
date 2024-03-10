@@ -18,6 +18,17 @@ export async function assignSelf(issueId: number) {
   revalidatePath(`/issues/${issueId}`);
 }
 
+export async function assignTo(issueId: number, accountId: number) {
+  await prisma.issue.update({
+    where: { id: issueId },
+    data: {
+      assignee: { connect: { id: accountId } }
+    }
+  })
+  revalidatePath("/issues");
+  revalidatePath(`/issues/${issueId}`);
+}
+
 export async function applyForAssignee(issueId: number) {
   const session = await getSession();
   if (!session) return redirect("/login");
