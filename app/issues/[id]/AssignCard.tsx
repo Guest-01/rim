@@ -17,13 +17,13 @@ export default function AssignCard({ issue, session }: { issue: IssueWithInclude
   return (
     <div className="card card-bordered card-compact">
       <div className="card-body">
-        <span>담당자 선정</span>
-        <div className="card-actions items-center">
+        <span className="font-semibold">담당자 선정</span>
+        <div className="card-actions items-center min-h-12">
           <span>후보 {issue.candidates.length}명</span>
           <div className="avatar-group -space-x-4 rtl:space-x-reverse">
             {issue.candidates.slice(0, 4).map(candi => {
               return (
-                <div title={candi.name} className="avatar placeholder">
+                <div title={candi.name} className="avatar placeholder" key={candi.id}>
                   <div className="bg-neutral text-neutral-content rounded-full w-8">
                     <span className="text-xs">{candi.name.slice(0, 2)}</span>
                   </div>
