@@ -24,6 +24,7 @@ model Account {
   issuesAssigned Issue[]   @relation(name: "issuesAssigned")
   issuesApplied  Issue[]   @relation(name: "issuesApplied")
   projects       Project[]
+  Comment        Comment[]
 }
 
 model Role {
@@ -47,12 +48,24 @@ model Issue {
   assignee      Account?    @relation(name: "issuesAssigned", fields: [assigneeId], references: [id])
   assigneeId    Int?
   candidates    Account[]   @relation(name: "issuesApplied")
+  Comment       Comment[]
 }
 
 model IssueStatus {
   id    Int     @id @default(autoincrement())
   value String  @unique
   Issue Issue[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  author    Account  @relation(fields: [accountId], references: [id])
+  accountId Int
+  issue     Issue    @relation(fields: [issueId], references: [id])
+  issueId   Int
+  content   String
 }
 
 model Project {

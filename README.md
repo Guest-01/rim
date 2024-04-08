@@ -313,3 +313,22 @@ model Project {
   } catch (e) {
     //...후략
  ```
+
+ ### 댓글(Comment) 모델 생성
+
+ 일감에는 댓글을 달 수 있음. 일감:댓글은 1:N 관계. 계정:댓글은 1:1 관계.
+
+ ```prisma
+ model Comment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  author    Account  @relation(fields: [accountId], references: [id])
+  accountId Int
+  issue     Issue    @relation(fields: [issueId], references: [id])
+  issueId   Int
+  content   String
+}
+```
+
+위처럼 모델 작성 후 `npx prisma migrate dev`를 통해 스키마 반영 및 클라이언트 생성. `AssignCard`와 마찬가지로 `CommentCard`라는 클라이언트 컴포넌트를 만들고 댓글 목록을 구현함.

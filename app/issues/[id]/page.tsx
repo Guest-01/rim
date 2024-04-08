@@ -3,13 +3,15 @@ import prisma from "@/app/lib/prisma";
 import clsx from "clsx";
 import AssignCard from "./AssignCard";
 import { getSession } from "@/app/lib/auth";
+import CommentCard from "./CommentCard";
+import { addComment } from "./actions";
 
 export default async function Issue({ params }: { params: { id: string } }) {
   const issue = await prisma.issue.findUniqueOrThrow({
     where: { id: parseInt(params.id) },
     include: { author: true, assignee: true, status: true, project: true, candidates: true }
   });
-
+  const comments = await prisma.comment.findMany({ where: { issueId: { equals: parseInt(params.id) } }, include: { author: true } });
   const session = await getSession();
 
   return (
@@ -51,14 +53,7 @@ export default async function Issue({ params }: { params: { id: string } }) {
         </>
       }
       <div className="my-2"></div>
-      <div className="card card-bordered card-compact">
-        <div className="card-body">
-          <form action="" className="form-control">
-            <textarea name="comment" className="textarea textarea-sm textarea-bordered" placeholder="댓글 입력" />
-            <button type="submit" className="btn btn-sm mt-2">댓글 등록</button>
-          </form>
-        </div>
-      </div>
+      {session && <CommentCard comments={comments} session={session} />}
     </>
   )
 }
