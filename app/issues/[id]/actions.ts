@@ -12,7 +12,8 @@ export async function assignSelf(issueId: number) {
   await prisma.issue.update({
     where: { id: issueId },
     data: {
-      assignee: { connect: { id: session.accountId } }
+      assignee: { connect: { id: session.accountId } },
+      status: { connect: { value: "수락" } },
     }
   });
   revalidatePath("/issues");

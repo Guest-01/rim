@@ -37,12 +37,6 @@ export default function AddForm({ projects, selectedProjectId, accounts, issueSt
           <option key={account.id} value={account.id}>{account.name}</option>
         ))}
       </select>
-      <label htmlFor="status" className="label label-text">상태</label>
-      <select name="status" className="select select-bordered select-sm w-full" defaultValue="신규" required>
-        {issueStatusList.map(status => (
-          <option key={status.id} value={status.id}>{status.value}</option>
-        ))}
-      </select>
       <label htmlFor="content" className="label label-text">내용</label>
       <textarea name="content" rows={6} className="textarea textarea-sm textarea-bordered" placeholder="# 대제목 ## 중제목 ### 소제목" defaultValue=""></textarea>
       <div className="my-2 text-error">{errMsg}</div>

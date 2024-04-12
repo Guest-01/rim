@@ -17,16 +17,27 @@ export async function createIssue(prevState: any, formData: FormData) {
   const session = await getSession();
   if (!session) return redirect("/login");
 
+  const projectId = formData.get("project")?.toString() === "null" ? undefined : parseInt(formData.get("project")!.toString());
+  const assigneeId = formData.get("assignee")?.toString() === "null" ? undefined : parseInt(formData.get("assignee")!.toString());
+  let statusValue;
+  if (assigneeId && assigneeId === session.accountId) {
+    statusValue = "수락";
+  } else if (assigneeId) {
+    statusValue = "대기";
+  } else {
+    statusValue = "신규";
+  }
+
   await prisma.issue.create({
     data: {
-      projectId: parseInt(formData.get("project")!.toString()),
-      title: formData.get("title")!.toString().trim(),
-      issueStatusId: parseInt(formData.get("status")!.toString()),
-      authorId: session.accountId,
-      assigneeId: parseInt(formData.get("assignee")!.toString()),
-      content: formData.get("content")!.toString().trim(),
-    },
-  });
+      ...(projectId && { project: { connect: { id: projectId } } }),
+      ...(assigneeId && { assignee: { connect: { id: assigneeId } } }),
+      title: formData.get("title")!.toString(),
+      author: { connect: { id: session.accountId } },
+      status: { connect: { value: statusValue } },
+      content: formData.get("content")!.toString(),
+    }
+  })
 
   revalidatePath("/issues");
   redirect("/issues");
