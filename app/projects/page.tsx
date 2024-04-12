@@ -26,8 +26,7 @@ export default async function Projects() {
               <div className="card-title">{project.title}</div>
               <p>{project.subtitle}</p>
               <div className="card-actions justify-end">
-                {/* TODO: 일감 페이지로 리다이렉트 */}
-                <button className="btn btn-sm">하위 {project._count.issues}개 일감 보기</button>
+                <Link href={`/issues?filter_by=project&filter_text=${project.title}`} className="btn btn-sm">하위 {project._count.issues}개 일감 보기</Link>
                 <Link href={`/issues/new?project_id=${project.id}`} className="btn btn-sm btn-primary">하위 일감 만들기</Link>
               </div>
             </div>

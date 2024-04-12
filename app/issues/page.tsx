@@ -13,6 +13,7 @@ export default async function Issues({ searchParams }: { searchParams: { [key: s
       assignee: { name: searchParams.filter_by === "assignee" ? { contains: searchParams.filter_text as string } : undefined },
       assigneeId: searchParams.assignee_id === "null" ? null : undefined,
       authorId: { equals: searchParams.author_id ? parseInt(searchParams.author_id as string) : undefined },
+      project: { title: searchParams.filter_by === "project" ? { contains: searchParams.filter_text as string } : undefined },
     },
   });
 
@@ -25,6 +26,7 @@ export default async function Issues({ searchParams }: { searchParams: { [key: s
   const selectOptions = [
     { title: "제목", value: "title" },
     { title: "담당자", value: "assignee" },
+    { title: "프로젝트", value: "project" },
   ]
 
   return (
