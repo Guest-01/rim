@@ -24,7 +24,7 @@ export default async function Issue({ params }: { params: { id: string } }) {
             <div className={clsx("badge", {
               "badge-outline": issue?.status.value === "신규",
               "badge-warning": issue?.status.value === "대기",
-              "badge-success": issue?.status.value === "수락",
+              "badge-success text-base-100": issue?.status.value === "수락",
               "badge-primary": issue?.status.value === "진행중",
               "badge-neutral": issue?.status.value === "완료",
             })}>

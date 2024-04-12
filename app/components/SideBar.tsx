@@ -46,12 +46,12 @@ export default function SideBar() {
           </summary>
           <ul>
             <li>
-              <Link href="/my-issues" className={clsx({ "active": pathname === "/my-issues" })}>
+              <Link href="/issues/my" className={clsx({ "active": pathname === "/issues/my" })}>
                 내 일감
               </Link>
             </li>
             <li>
-              <Link href="/pending-issues" className={clsx({ "active": pathname === "/pending-issues" })}>
+              <Link href="/issues/pending" className={clsx({ "active": pathname === "/issues/pending" })}>
                 대기 일감
               </Link>
             </li>
