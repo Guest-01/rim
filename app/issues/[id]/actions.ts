@@ -6,19 +6,6 @@ import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function assignSelf(issueId: number) {
-  const session = await getSession();
-  if (!session) return redirect("/login");
-  await prisma.issue.update({
-    where: { id: issueId },
-    data: {
-      assignee: { connect: { id: session.accountId } },
-      status: { connect: { value: "수락" } },
-    }
-  });
-  revalidatePath("/issues");
-  revalidatePath(`/issues/${issueId}`);
-}
 
 export async function assignTo(issueId: number, accountId: number) {
   await prisma.issue.update({
@@ -27,7 +14,7 @@ export async function assignTo(issueId: number, accountId: number) {
       assignee: { connect: { id: accountId } },
       status: { connect: { value: "대기" } }
     }
-  })
+  });
   revalidatePath("/issues");
   revalidatePath(`/issues/${issueId}`);
 }
@@ -65,9 +52,13 @@ export async function deleteComment(commentId: number) {
 }
 
 export async function rejectAssign(issueId: number) {
+  const { authorId } = await prisma.issue.findUniqueOrThrow({ where: { id: issueId }, select: { authorId: true } });
   await prisma.issue.update({
     where: { id: issueId },
-    data: { assigneeId: null, },
+    data: {
+      assignee: { connect: { id: authorId! } },
+      status: { connect: { value: "대기" } },
+    },
   })
   revalidatePath("/issues");
   revalidatePath(`/issues/${issueId}`);

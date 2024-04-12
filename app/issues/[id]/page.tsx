@@ -12,6 +12,7 @@ export default async function Issue({ params }: { params: { id: string } }) {
   });
   const comments = await prisma.comment.findMany({ where: { issueId: { equals: parseInt(params.id) } }, include: { author: true } });
   const session = await getSession();
+  const accounts = await prisma.account.findMany();
 
   return (
     <>
@@ -50,7 +51,7 @@ export default async function Issue({ params }: { params: { id: string } }) {
       {session &&
         <>
           <div className="my-2"></div>
-          <AssignCard issue={issue} session={session} />
+          <AssignCard issue={issue} session={session} accounts={accounts} />
         </>
       }
       <div className="my-2"></div>
