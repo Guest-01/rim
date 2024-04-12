@@ -21,9 +21,11 @@ export default async function Issue({ params }: { params: { id: string } }) {
           <div className="text-xs">상위 프로젝트: {issue?.project?.title}</div>
           <h2 className="card-title">
             <div className={clsx("badge", {
-              "badge-neutral": issue?.status.value === "신규",
+              "badge-outline": issue?.status.value === "신규",
+              "badge-warning": issue?.status.value === "대기",
+              "badge-success": issue?.status.value === "수락",
               "badge-primary": issue?.status.value === "진행중",
-              "badge-outline": issue?.status.value === "완료",
+              "badge-neutral": issue?.status.value === "완료",
             })}>
               {issue?.status.value}
             </div>
@@ -52,7 +54,7 @@ export default async function Issue({ params }: { params: { id: string } }) {
         </>
       }
       <div className="my-2"></div>
-      {session && <CommentCard comments={comments} session={session} />}
+      <CommentCard comments={comments} session={session} />
     </>
   )
 }

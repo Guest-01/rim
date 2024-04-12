@@ -8,7 +8,7 @@ import { useEffect, useRef } from "react";
 
 type CommentWithIncludes = Prisma.CommentGetPayload<{ include: { author: true } }>;
 
-export default function CommentCard({ comments, session }: { comments: CommentWithIncludes[]; session: { accountId: number; expires: Date; } }) {
+export default function CommentCard({ comments, session }: { comments: CommentWithIncludes[]; session: { accountId: number; expires: Date; } | null }) {
   const params = useParams();
   const [state, formAction] = useFormState(addComment, null);
   const form = useRef<HTMLFormElement>(null);
@@ -48,16 +48,18 @@ export default function CommentCard({ comments, session }: { comments: CommentWi
           )}
         </div>
       </div>
-      <div className="my-2"></div>
-      <div className="card card-bordered card-compact">
-        <div className="card-body">
-          <form ref={form} action={formAction} className="form-control">
-            <input type="hidden" name="issue-id" value={params.id} />
-            <textarea name="content" className="textarea textarea-sm textarea-bordered" placeholder="댓글 입력" />
-            <button type="submit" className="btn btn-sm mt-2">댓글 등록</button>
-          </form>
+      {session && <>
+        <div className="my-2"></div>
+        <div className="card card-bordered card-compact">
+          <div className="card-body">
+            <form ref={form} action={formAction} className="form-control">
+              <input type="hidden" name="issue-id" value={params.id} />
+              <textarea name="content" className="textarea textarea-sm textarea-bordered" placeholder="댓글 입력" />
+              <button type="submit" className="btn btn-sm mt-2">댓글 등록</button>
+            </form>
+          </div>
         </div>
-      </div>
+      </>}
     </>
   )
 }

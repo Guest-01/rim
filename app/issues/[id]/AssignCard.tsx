@@ -1,14 +1,14 @@
 "use client";
 
 import { Prisma } from "@prisma/client";
-import { applyForAssignee, assignSelf, assignTo, removeApplyForAssignee } from "./actions";
+import { acceptAssign, applyForAssignee, assignSelf, assignTo, rejectAssign, removeApplyForAssignee } from "./actions";
 import { useState } from "react";
 
 type IssueWithIncludes = Prisma.IssueGetPayload<{ include: { author: true, assignee: true, status: true, project: true, candidates: true } }>;
 
 export default function AssignCard({ issue, session }: { issue: IssueWithIncludes, session: { accountId: number; expires: Date; } }) {
   const isApplied = issue.candidates.some(account => account.id === session?.accountId);
-  const isMyIssue = issue.authorId === session.accountId;
+  const isMeAuthor = issue.authorId === session.accountId;
   const isUnassigned = issue.assigneeId === null;
   const isNotAcceptedYet = issue.status.value === "대기" && issue.assigneeId === session.accountId;
 
@@ -38,33 +38,27 @@ export default function AssignCard({ issue, session }: { issue: IssueWithInclude
               </div>
               : null}
           </div>
-          {
-            isMyIssue && isUnassigned &&
+          {isMeAuthor && isUnassigned &&
             <>
-              {
-                issue.candidates.length > 0 &&
+              {issue.candidates.length > 0 &&
                 <>
-                  <select name="candidates" className="select select-sm select-bordered" value={selectedCandidate}
-                    onChange={(e) => setSelectedCanditate(e.target.value)}
-                  >
+                  <select name="candidates" className="select select-sm select-bordered" value={selectedCandidate} onChange={(e) => setSelectedCanditate(e.target.value)}>
                     {/* undefined를 넣으면 text가 value가 되어버림 따라서 공백 문자열을 넣어야 아래 disabled에 boolean으로 변환 가능 */}
                     <option value={""}>후보 중 선택</option>
                     {issue.candidates.map(candi => <option key={candi.id} value={candi.id}>{candi.name}</option>)}
                   </select>
                   <button className="btn btn-sm" disabled={!selectedCandidate} onClick={() => assignTo(issue.id, parseInt(selectedCandidate!))}>를(을) 담당자로 지정</button>
-                </>
-              }
+                </>}
               <button className="btn btn-sm" onClick={() => assignSelf(issue.id)}>또는 직접 담당</button>
-            </>
-          }
-          {!isMyIssue && <>
+            </>}
+          {!isMeAuthor && !isNotAcceptedYet && <>
             {isApplied
               ? <button className="btn btn-sm" onClick={() => removeApplyForAssignee(issue.id)}>입찰 취소</button>
               : <button className="btn btn-sm" onClick={() => applyForAssignee(issue.id)}>입찰</button>}
           </>}
           {isNotAcceptedYet && <>
-            <button className="btn btn-sm">담당 수락</button>
-            <button className="btn btn-sm">담당 거절</button>
+            <button className="btn btn-sm" onClick={() => acceptAssign(issue.id)}>담당 수락</button>
+            <button className="btn btn-sm" onClick={() => rejectAssign(issue.id)}>담당 거절</button>
           </>}
         </div>
       </div>

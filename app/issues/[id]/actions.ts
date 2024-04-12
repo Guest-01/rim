@@ -23,7 +23,8 @@ export async function assignTo(issueId: number, accountId: number) {
   await prisma.issue.update({
     where: { id: issueId },
     data: {
-      assignee: { connect: { id: accountId } }
+      assignee: { connect: { id: accountId } },
+      status: { connect: { value: "대기" } }
     }
   })
   revalidatePath("/issues");
@@ -86,4 +87,22 @@ export async function deleteComment(commentId: number) {
   const parentIssueId = (await prisma.comment.findUniqueOrThrow({ where: { id: commentId } })).issueId
   await prisma.comment.delete({ where: { id: commentId } });
   revalidatePath(`/issues/${parentIssueId}`);
+}
+
+export async function rejectAssign(issueId: number) {
+  await prisma.issue.update({
+    where: { id: issueId },
+    data: { assigneeId: null, },
+  })
+  revalidatePath("/issues");
+  revalidatePath(`/issues/${issueId}`);
+}
+
+export async function acceptAssign(issueId: number) {
+  await prisma.issue.update({
+    where: { id: issueId },
+    data: { status: { connect: { value: "수락" } } },
+  })
+  revalidatePath("/issues");
+  revalidatePath(`/issues/${issueId}`);
 }
