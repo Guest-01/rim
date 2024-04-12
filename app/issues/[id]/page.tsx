@@ -4,7 +4,6 @@ import clsx from "clsx";
 import AssignCard from "./AssignCard";
 import { getSession } from "@/app/lib/auth";
 import CommentCard from "./CommentCard";
-import { addComment } from "./actions";
 
 export default async function Issue({ params }: { params: { id: string } }) {
   const issue = await prisma.issue.findUniqueOrThrow({

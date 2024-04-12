@@ -45,9 +45,10 @@ export default function AssignCard({ issue, session }: { issue: IssueWithInclude
                 issue.candidates.length > 0 &&
                 <>
                   <select name="candidates" className="select select-sm select-bordered" value={selectedCandidate}
-                    onChange={(e) => { setSelectedCanditate(e.target.value); }}
+                    onChange={(e) => setSelectedCanditate(e.target.value)}
                   >
-                    <option value={undefined}>후보 중 선택</option>
+                    {/* undefined를 넣으면 text가 value가 되어버림 따라서 공백 문자열을 넣어야 아래 disabled에 boolean으로 변환 가능 */}
+                    <option value={""}>후보 중 선택</option>
                     {issue.candidates.map(candi => <option key={candi.id} value={candi.id}>{candi.name}</option>)}
                   </select>
                   <button className="btn btn-sm" disabled={!selectedCandidate} onClick={() => assignTo(issue.id, parseInt(selectedCandidate!))}>를(을) 담당자로 지정</button>
