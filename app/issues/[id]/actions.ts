@@ -32,32 +32,6 @@ export async function assignTo(issueId: number, accountId: number) {
   revalidatePath(`/issues/${issueId}`);
 }
 
-export async function applyForAssignee(issueId: number) {
-  const session = await getSession();
-  if (!session) return redirect("/login");
-  await prisma.issue.update({
-    where: { id: issueId },
-    data: {
-      candidates: { connect: { id: session.accountId } }
-    }
-  })
-  revalidatePath("/issues");
-  revalidatePath(`/issues/${issueId}`);
-}
-
-export async function removeApplyForAssignee(issueId: number) {
-  const session = await getSession();
-  if (!session) return redirect("/login");
-  await prisma.issue.update({
-    where: { id: issueId },
-    data: {
-      candidates: { disconnect: { id: session.accountId } }
-    }
-  })
-  revalidatePath("/issues");
-  revalidatePath(`/issues/${issueId}`);
-}
-
 export async function addComment(prevState: any, formData: FormData) {
   const session = await getSession();
   if (!session) return redirect("/login");

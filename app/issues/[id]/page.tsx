@@ -8,7 +8,7 @@ import CommentCard from "./CommentCard";
 export default async function Issue({ params }: { params: { id: string } }) {
   const issue = await prisma.issue.findUniqueOrThrow({
     where: { id: parseInt(params.id) },
-    include: { author: true, assignee: true, status: true, project: true, candidates: true }
+    include: { author: true, assignee: true, status: true, project: true }
   });
   const comments = await prisma.comment.findMany({ where: { issueId: { equals: parseInt(params.id) } }, include: { author: true } });
   const session = await getSession();
