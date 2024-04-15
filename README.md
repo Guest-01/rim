@@ -330,3 +330,13 @@ model Project {
 ```
 
 위처럼 모델 작성 후 `npx prisma migrate dev`를 통해 스키마 반영 및 클라이언트 생성. `AssignCard`와 마찬가지로 `CommentCard`라는 클라이언트 컴포넌트를 만들고 댓글 목록을 구현함.
+
+### 대기 일감 실시간 개수 표시하기
+
+왼쪽 사이드바 중, `대기 일감`에는 현재 대기 상태인 일감의 개수를 같이 표기해주고 있음. 누군가가 본인에게 일감을 할당하면 바로 카운트가 올라가야 함. 이를 위해 SSE 도입 검토.
+
+NextJS 13부터 도입된 App Router에서는 `Response` 객체가 fetch API쪽에서 쓰이는 인터페이스라서 많은 설정을 제공하지 않는다. 반면 기존의 Page Router에서는 [`http.ServerResponse`를 이용하기 때문에](https://nextjs.org/docs/pages/building-your-application/routing/api-routes#parameters) 훨씬 더 많은 메소드 등이 제공되어 SSE를 구현하기 쉬워진다.
+
+그리고 한가지 더 특이한 점은 일반적인 nodejs나 express를 사용할 때와 달리 `Cache-Control: no-cache, no-transform` 헤더를 정확하게 추가해주어야 한다. express에서는 `no-cache`만 써주어도 되었는데, nextjs를 사용할 때는 `no-transform`까지 써주어야한다. `gzip` 컴프레션 관련 이슈로 추정. [상세링크](https://github.com/vercel/next.js/issues/9965#issuecomment-584319868)
+
+응답에 사용하는 `res`객체는 핸들러 함수 안에서만 존재할 수 있는데, 다른 actions에서 `res.write`를 호출할 수 없어서 방법을 찾는 중.
