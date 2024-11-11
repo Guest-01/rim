@@ -1,39 +1,25 @@
 import EventEmitter from 'events';
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-type ResponseData = {
-  message: string
-}
+export const notifySSE = new EventEmitter();
 
-class Counter extends EventEmitter {
-  count: number;
-
-  constructor(count = 0) {
-    super();
-    this.count = count;
-    return;
-  }
-
-  setCount(count: number) {
-    this.count = count;
-    this.emit("change", this.count);
-  }
-}
-
-export const counter = new Counter(0);
-
-export default function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   res.setHeader('Cache-Control', 'no-cache, no-transform');
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Connection', 'keep-alive');
   res.flushHeaders();
+  res.write(`data: SSE connected\n\n`);
 
-  counter.addListener("change", (count) => {
-    console.log("change!", count);
-    res.write(`data: ${count}\n\n`);
-  })
+  const notifyListener = (msg: any) => {
+    if (res.writableEnded) return;
+
+    res.write(`data: ${JSON.stringify(msg)}\n\n`);
+  };
+
+  notifySSE.addListener('notify', notifyListener);
 
   res.on('close', () => {
+    notifySSE.removeListener('notify', notifyListener);
     res.end();
-  })
+  });
 }

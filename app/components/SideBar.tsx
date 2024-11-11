@@ -3,30 +3,13 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
 
 export default function SideBar() {
   const pathname = usePathname();
-  const [pendings, setPendings] = useState(0);
-  const evtSource = useRef<EventSource | null>(null);
-
-  useEffect(() => {
-    console.log("1");
-    evtSource.current = new EventSource('/api/sse');
-    evtSource.current.addEventListener("message", ({ data }) => {
-      console.log("evtSource message:");
-      console.log(data);
-    })
-    evtSource.current.addEventListener("error", (ev) => {
-      console.log(ev);
-    })
-    return () => { console.log("end!"); evtSource.current?.close(); }
-  }, [])
-
+  
   if (pathname?.includes("login") || pathname?.includes("signup")) {
     return null;
   }
-
 
   return (
     <ul className="menu p-4 min-w-64 bg-base-200 text-base-content hidden lg:block">
@@ -71,7 +54,7 @@ export default function SideBar() {
             <li>
               <Link href="/issues/pending" className={clsx({ "active": pathname === "/issues/pending" })}>
                 대기 일감
-                <div className="badge badge-error text-base-100">{pendings}</div>
+                {/* <div className="badge badge-error text-base-100">{pendings}</div> */}
               </Link>
             </li>
             <li>

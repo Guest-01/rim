@@ -38,3 +38,4 @@ next-env.d.ts
 
 # sqlite local database
 /prisma/*.db
+/prisma/*.sqlite

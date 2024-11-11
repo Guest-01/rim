@@ -331,7 +331,7 @@ model Project {
 
 위처럼 모델 작성 후 `npx prisma migrate dev`를 통해 스키마 반영 및 클라이언트 생성. `AssignCard`와 마찬가지로 `CommentCard`라는 클라이언트 컴포넌트를 만들고 댓글 목록을 구현함.
 
-### 대기 일감 실시간 개수 표시하기
+### ~~대기 일감 실시간 개수 표시하기~~ 보류
 
 왼쪽 사이드바 중, `대기 일감`에는 현재 대기 상태인 일감의 개수를 같이 표기해주고 있음. 누군가가 본인에게 일감을 할당하면 바로 카운트가 올라가야 함. 이를 위해 SSE 도입 검토.
 
@@ -340,3 +340,5 @@ NextJS 13부터 도입된 App Router에서는 `Response` 객체가 fetch API쪽�
 그리고 한가지 더 특이한 점은 일반적인 nodejs나 express를 사용할 때와 달리 `Cache-Control: no-cache, no-transform` 헤더를 정확하게 추가해주어야 한다. express에서는 `no-cache`만 써주어도 되었는데, nextjs를 사용할 때는 `no-transform`까지 써주어야한다. `gzip` 컴프레션 관련 이슈로 추정. [상세링크](https://github.com/vercel/next.js/issues/9965#issuecomment-584319868)
 
 응답에 사용하는 `res`객체는 핸들러 함수 안에서만 존재할 수 있는데, 다른 actions에서 `res.write`를 호출할 수 없어서 방법을 찾는 중.
+
+`2024.11.13` 현재 대기 일감 실시간 개수 표시 기능은 보류 중 (SSE 알림을 트리거하는 방법을 찾지 못함) 일단은 커스텀 훅으로 래핑해놓고 보류.
