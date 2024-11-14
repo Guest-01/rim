@@ -21,6 +21,8 @@ export async function login(prevState: any, formData: FormData) {
   const isCorrectPw = await bcrypt.compare(formData.get("password")!.toString().trim(), account.password);
   if (!isCorrectPw) return "비밀번호가 올바르지 않습니다"
 
+  if (!account.active) return "계정이 비활성화 상태입니다"
+
   await createSession(account.id);
 
   revalidatePath("/", "layout");
