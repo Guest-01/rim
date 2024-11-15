@@ -1,14 +1,22 @@
 "use client";
+
 import { Prisma } from "@prisma/client";
 import Link from "next/link";
 import { useFormState, useFormStatus } from "react-dom"
-import { editAccount } from "./actions";
+import { editAccount, resetPassword } from "./actions";
 import clsx from "clsx";
+import { useRef } from "react";
+import ConfirmDlg from "@/app/components/ConfirmDlg";
 
 type AccountWithRole = Prisma.AccountGetPayload<{ include: { role: true } }>;
 
 export default function AccountEditForm({ account }: { account: AccountWithRole }) {
   const [state, formAction] = useFormState(editAccount, null)
+  const dlg = useRef<HTMLDialogElement | null>(null);
+
+  const handleResetPassword = async (accountId: number, newPassword: string) => {
+    await resetPassword(accountId, newPassword)
+  }
 
   return (
     <>
@@ -28,7 +36,7 @@ export default function AccountEditForm({ account }: { account: AccountWithRole 
         </label>
         <label className="label">
           <span className="label-text">비밀번호</span>
-          <div className="btn btn-sm" onClick={() => { }}>초기화</div>
+          <div className="btn btn-sm" onClick={() => dlg.current?.showModal()}>초기화</div>
         </label>
         <label htmlFor="role" className="label">
           <span className="label-text">역할</span>
@@ -60,6 +68,12 @@ export default function AccountEditForm({ account }: { account: AccountWithRole 
           뒤로가기
         </Link>
       </form>
+      <ConfirmDlg
+        ref={dlg}
+        title={`${account.id}번 계정 비밀번호 초기화`}
+        content={`${account.name} 계정의 비밀번호를 초기화 하시겠습니까? (초기 비밀번호: Change#1)`}
+        onConfirm={() => handleResetPassword(account.id, "Change#1")}
+      />
     </>
   )
 }

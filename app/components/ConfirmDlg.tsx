@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { forwardRef, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-const ConfirmDlg = forwardRef<HTMLDialogElement, { title: string; content: string; onConfirm: Function; isDestructive: boolean }>(({ title, content, onConfirm, isDestructive }, ref) => {
+const ConfirmDlg = forwardRef<HTMLDialogElement, { title: string; content: string; onConfirm: Function; isDestructive?: boolean }>(({ title, content, onConfirm, isDestructive }, ref) => {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true) }, []);
 

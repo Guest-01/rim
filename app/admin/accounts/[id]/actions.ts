@@ -3,6 +3,7 @@
 import prisma from "@/app/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import bcrypt from "bcrypt";
 
 export async function editAccount(prevState: any, formData: FormData) {
   await new Promise((r) => setTimeout(r, 1000));
@@ -31,6 +32,15 @@ export async function editAccount(prevState: any, formData: FormData) {
     return { error: "알 수 없는 DB 오류입니다" };
   }
 
+  revalidatePath("/admin/accounts");
+  return { error: null };
+}
+
+export async function resetPassword(accountId: number, newPassword: string) {
+  await prisma.account.update({
+    where: { id: accountId },
+    data: { password: await bcrypt.hash(newPassword, 10) },
+  });
   revalidatePath("/admin/accounts");
   return { error: null };
 }
