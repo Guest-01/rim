@@ -21,7 +21,7 @@ export default async function Projects() {
       </p>
       <div className="grid lg:grid-cols-4 lg:gap-4">
         {projects.map(project =>
-          <section key={project.id} className="card card-compact shadow">
+          <section key={project.id} className="card card-bordered border-base-300 compact shadow">
             <div className="card-body">
               <div className="card-title">{project.title}</div>
               <p>{project.subtitle}</p>

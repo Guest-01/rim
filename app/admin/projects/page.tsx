@@ -20,7 +20,7 @@ export default async function ProjectsAdmin() {
   return (
     <>
       <Breadcrumbs tree={["관리자 설정", "프로젝트 관리"]} />
-      <div className="card card-bordered pb-2">
+      <div className="card card-bordered border-base-300 shadow pb-2">
         <FilterHeader presets={presets} selectOptions={selectOptions} />
         <table className="table table-sm table-fixed">
           <thead>

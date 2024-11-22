@@ -32,7 +32,7 @@ export default async function Issues({ searchParams }: { searchParams: { [key: s
   return (
     <>
       <Breadcrumbs tree={["일감", "모든 일감"]} />
-      <div className="card card-bordered pb-2">
+      <div className="card card-bordered border-base-300 shadow pb-2">
         <FilterHeader presets={presets} selectOptions={selectOptions} />
         <table className="table table-sm table-fixed">
           <thead>

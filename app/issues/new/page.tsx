@@ -9,7 +9,7 @@ export default async function New({ searchParams }: { searchParams: { [key: stri
   return (
     <>
       <Breadcrumbs tree={["일감", "일감 생성"]} />
-      <div className="card card-bordered p-4 pt-2">
+      <div className="card card-bordered border-base-300 shadow p-4 pt-2">
         <AddForm
           projects={projects}
           selectedProjectId={searchParams.project_id as string | undefined}

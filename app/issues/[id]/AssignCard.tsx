@@ -11,7 +11,7 @@ export default function AssignCard({ issue, session, accounts }: { issue: IssueW
   const [selectedAssignee, setSelectedAssignee] = useState<string>();
 
   return (
-    <div className="card card-bordered card-compact">
+    <div className="card card-bordered border-base-300 shadow card-compact">
       <div className="card-body">
         <span className="font-semibold">담당자 지정</span>
         <div className="flex gap-2 items-center">

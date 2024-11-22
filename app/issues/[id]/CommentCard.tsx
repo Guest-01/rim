@@ -21,7 +21,7 @@ export default function CommentCard({ comments, session }: { comments: CommentWi
 
   return (
     <>
-      <div className="card card-bordered card-compact">
+      <div className="card card-bordered border-base-300 shadow card-compact">
         <div className="card-body">
           <span className="font-semibold">댓글</span>
           {comments.map(comment =>
@@ -50,7 +50,7 @@ export default function CommentCard({ comments, session }: { comments: CommentWi
       </div>
       {session && <>
         <div className="my-2"></div>
-        <div className="card card-bordered card-compact">
+        <div className="card card-bordered border-base-300 shadow card-compact">
           <div className="card-body">
             <form ref={form} action={formAction} className="form-control">
               <input type="hidden" name="issue-id" value={params.id} />

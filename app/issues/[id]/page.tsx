@@ -17,7 +17,7 @@ export default async function Issue({ params }: { params: { id: string } }) {
   return (
     <>
       <Breadcrumbs tree={["일감", `#${params.id}`]} />
-      <article className="card card-bordered card-compact">
+      <article className="card card-bordered border-base-300 shadow card-compact">
         <div className="card-body">
           <div className="text-xs">상위 프로젝트: {issue?.project?.title}</div>
           <h2 className="card-title">
