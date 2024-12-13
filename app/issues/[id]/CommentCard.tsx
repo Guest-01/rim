@@ -53,7 +53,7 @@ export default function CommentCard({ comments, session }: { comments: CommentWi
         <div className="card card-bordered border-base-300 shadow card-compact">
           <div className="card-body">
             <form ref={form} action={formAction} className="form-control">
-              <input type="hidden" name="issue-id" value={params.id} />
+              <input type="hidden" name="issue-id" value={params?.id} />
               <textarea name="content" className="textarea textarea-sm textarea-bordered" placeholder="댓글 입력" />
               <button type="submit" className="btn btn-sm mt-2">댓글 등록</button>
             </form>
