@@ -343,7 +343,7 @@ NextJS 13부터 도입된 App Router에서는 `Response` 객체가 fetch API쪽�
 
 `2024.11.13` 현재 대기 일감 실시간 개수 표시 기능은 보류 중 (SSE 알림을 트리거하는 방법을 찾지 못함) 일단은 커스텀 훅으로 래핑해놓고 보류.
 
-## 배포
+## 배포 🚀
 
 ### `2024.12.13` Vercel에 첫 배포 시도 (Type Error 발생)
 
@@ -438,3 +438,19 @@ error: Environment variable not found: DATABASE_URL.
 ```
 "postinstall": "prisma generate && prisma migrate deploy"
 ```
+
+### 🚨 뒤늦게 발견한 sqlite 미지원 사실
+
+위처럼 하고 main 브랜치에 푸시하여 빌드를 진행해보니 빌드할 때는 에러가 없었는데 `Runtime Log`를 확인해보니 아래와 같이 에러가 발생:
+
+```
+Error querying the database: Error code 14: Unable to open the database file
+```
+
+`migrate deploy`를 하면 sqlite 파일이 생성되었을텐데 왜 데이터베이스 파일을 열 수 없다고 하는지 의문이라 검색을 해보던 중, 아래와 같이 sqlite를 지원하지 않는다는 공식 문서를 발견:
+
+> https://vercel.com/guides/is-sqlite-supported-in-vercel
+
+대신 Vercel Postgres를 이용하라고 하는데 막상 링크를 들어가보면 해당 이름으로는 없고 Neon이라는 클라우드 DB가 가장 최상단에 뜸. Vercel에서는 Next.js를 배포할 때 일반 서버를 제공하는 것이 아니라 Serverless 방식으로 운영하는 것으로 보임. 따라서 파일 시스템에 접근해야하는 sqlite를 사용할 수 없는 것으로 보임.
+
+다른 배포처를 찾거나 아니면 클라우드 Postgres 서비스로 이전을 시도해야할 것으로 보임.
