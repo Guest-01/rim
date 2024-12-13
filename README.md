@@ -1,17 +1,14 @@
 # Rim - Redmine Improved
 
 > 일감 관리 도구
-
-(개발중)
+> https://rim-hh.vercel.app/
 
 ### 기술 스택
 
 - NextJS 14 (with App Router)
 - TailwindCSS + Daisy UI
 - Prisma + SQLite
-- Docker (예정)
-
-(작성중)
+- ~~Docker~~ Vercel 환경으로 전환
 
 ## 개발 과정
 
