@@ -345,7 +345,7 @@ NextJS 13부터 도입된 App Router에서는 `Response` 객체가 fetch API쪽�
 
 ## 배포
 
-### `2024.12.13` Vercel에 첫 배포 시도
+### `2024.12.13` Vercel에 첫 배포 시도 (Type Error 발생)
 
 Vercel은 Next.js를 개발하는 단체인 만큼, Next.js로 만든 프로젝트에 대해 Zero-Configruation Deploy를 지원한다. 별다른 복잡한 설정 없이 바로 배포가 가능하다는 점이 Next.js를 사용할 때 Vercel을 배포 환경으로 선택할 가장 큰 매력이다.
 
@@ -376,7 +376,7 @@ Vercel에 Github로 회원가입을 하고 프로젝트를 Import하면 바로 �
 
 타입 체크는 `npm run dev`를 할 때는 진행되지 않아서 미리 확인을 못했던 것 같다. 일일이 `npm run build`를 해보면서 타입 오류가 안나올 때까지 수정하였고 다시 시도해보았다.
 
-### 타입체크 후 main 브랜치에 푸시
+### Prisma 오류 발생
 
 타입 오류를 수정한 뒤에 main 브랜치에 푸시하였더니 자동으로 다시 배포가 진행되었음. 그러나 다시 아래와 같은 오류가 발생하였음:
 
@@ -411,4 +411,30 @@ Vercel에 Github로 회원가입을 하고 프로젝트를 Import하면 바로 �
 [12:30:45.111] 
 ```
 
-아마 프로젝트에 사용한 `Prisma` ORM 관련 오류인 것으로 추정된다. 다행히 친절하게 해결방안에 대한 링크까지 제공하고 있어서 참고하여 수정한 후에 다시 진행하였다.
+아마 프로젝트에 사용한 `Prisma` ORM 관련 오류인 것으로 추정된다. 다행히 친절하게 해결방안에 대한 링크까지 제공하고 있어서 참고하니 Vercel의 빌드 캐시 때문에 prisma client가 outdated되는 문제가 있다고 한다. 제안된 해결 방법에 따라 npm script에 `postinstall`을 추가해주고 다시 진행해보았다.
+
+### DATABASE_URL 환경 변수 누락
+
+이번에도 오류가 났는데... 데이터베이스 URL이 담긴 환경 변수를 못찾았다는 에러였다.
+
+```
+(나머지 로그 스킵)
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:10
+```
+
+처음에 가입하고 첫 빌드때 환경 변수를 넣어주었는데, 아마 해당 빌드에만 적용되고 이후 빌드에서는 적용이 안되었던 것 같다. 프로젝트 대시보드에서 세팅에 들어가면 아예 프로젝트 전역으로 설정할 수 있는 environment variables 설정이 있기에 거기에다가 다시 설정해주고 `Redeploy` 해보았다.
+
+### 초기 DB Migration 및 Seeding 필요
+
+이번에는 테이블이 없다는 에러가 발생했습니다.
+
+```
+[12:55:50.178] The table `main.Project` does not exist in the current database.
+```
+
+빌드 직후 초기 DB Migration 및 Seeding을 진행해도록 아래와 같이 `postinstall` 스크립트를 수정해보았습니다:
+
+```
+"postinstall": "prisma generate && prisma migrate deploy"
+```
