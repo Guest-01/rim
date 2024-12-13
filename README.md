@@ -342,3 +342,73 @@ NextJS 13부터 도입된 App Router에서는 `Response` 객체가 fetch API쪽�
 응답에 사용하는 `res`객체는 핸들러 함수 안에서만 존재할 수 있는데, 다른 actions에서 `res.write`를 호출할 수 없어서 방법을 찾는 중.
 
 `2024.11.13` 현재 대기 일감 실시간 개수 표시 기능은 보류 중 (SSE 알림을 트리거하는 방법을 찾지 못함) 일단은 커스텀 훅으로 래핑해놓고 보류.
+
+## 배포
+
+### `2024.12.13` Vercel에 첫 배포 시도
+
+Vercel은 Next.js를 개발하는 단체인 만큼, Next.js로 만든 프로젝트에 대해 Zero-Configruation Deploy를 지원한다. 별다른 복잡한 설정 없이 바로 배포가 가능하다는 점이 Next.js를 사용할 때 Vercel을 배포 환경으로 선택할 가장 큰 매력이다.
+
+Vercel에 Github로 회원가입을 하고 프로젝트를 Import하면 바로 빌드가 시작된다. 첫번째 빌드는 타입체크과정에서 에러가 발생하였다.
+
+```
+[12:24:56.315] Retrying 1/3...
+[12:24:58.130] Browserslist: caniuse-lite is outdated. Please run:
+[12:24:58.130]   npx update-browserslist-db@latest
+[12:24:58.130]   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[12:24:59.228]  ✓ Compiled successfully
+[12:24:59.229]    Linting and checking validity of types ...
+[12:25:03.743] Failed to compile.
+[12:25:03.743] 
+[12:25:03.744] ./app/components/FilterHeader.tsx:15:39
+[12:25:03.744] Type error: 'searchParams' is possibly 'null'.
+[12:25:03.744] 
+[12:25:03.744] [0m [90m 13 |[39m   [90m// 필터가 활성화 상태인지 확인하는 함수, 이를 이용해 필터버튼의 색깔을 칠해준다.[39m[0m
+[12:25:03.744] [0m [90m 14 |[39m   [90m// searchParams.toString()이 빈값이면 무조건 true가 되어버리기 때문에 먼저 확인 후 && 컨디션 체이닝.[39m[0m
+[12:25:03.744] [0m[31m[1m>[22m[39m[90m 15 |[39m   [36mconst[39m isCurrent [33m=[39m (href[33m:[39m string) [33m=>[39m searchParams[33m.[39mtoString() [33m&&[39m href[33m.[39mincludes(searchParams[33m.[39mtoString())[33m;[39m[0m
+[12:25:03.744] [0m [90m    |[39m                                       [31m[1m^[22m[39m[0m
+[12:25:03.744] [0m [90m 16 |[39m   [36mreturn[39m ([0m
+[12:25:03.744] [0m [90m 17 |[39m     [33m<[39m[33mdiv[39m className[33m=[39m[32m"p-4 flex justify-between"[39m[33m>[39m[0m
+[12:25:03.744] [0m [90m 18 |[39m       [33m<[39m[33mdiv[39m className[33m=[39m[32m"flex gap-2 items-center"[39m[33m>[39m[0m
+[12:25:03.784] Error: Command "npm run build" exited with 1
+[12:25:03.999] 
+```
+
+타입 체크는 `npm run dev`를 할 때는 진행되지 않아서 미리 확인을 못했던 것 같다. 일일이 `npm run build`를 해보면서 타입 오류가 안나올 때까지 수정하였고 다시 시도해보았다.
+
+### 타입체크 후 main 브랜치에 푸시
+
+타입 오류를 수정한 뒤에 main 브랜치에 푸시하였더니 자동으로 다시 배포가 진행되었음. 그러나 다시 아래와 같은 오류가 발생하였음:
+
+```
+[12:30:44.779] Prisma has detected that this project was built on Vercel, which caches dependencies. This leads to an outdated Prisma Client because Prisma's auto-generation isn't triggered. To fix this, make sure to run the `prisma generate` command during the build process.
+[12:30:44.779] 
+[12:30:44.779] Learn how: https://pris.ly/d/vercel-build
+[12:30:44.780] PrismaClientInitializationError: Prisma has detected that this project was built on Vercel, which caches dependencies. This leads to an outdated Prisma Client because Prisma's auto-generation isn't triggered. To fix this, make sure to run the `prisma generate` command during the build process.
+[12:30:44.780] 
+[12:30:44.781] Learn how: https://pris.ly/d/vercel-build
+[12:30:44.781]     at rl (/vercel/path0/node_modules/@prisma/client/runtime/library.js:36:69)
+[12:30:44.781]     at new t (/vercel/path0/node_modules/@prisma/client/runtime/library.js:131:2670)
+[12:30:44.781]     at 54158 (/vercel/path0/.next/server/chunks/764.js:1:7307)
+[12:30:44.781]     at t (/vercel/path0/.next/server/webpack-runtime.js:1:127)
+[12:30:44.781]     at 10622 (/vercel/path0/.next/server/chunks/764.js:1:5011)
+[12:30:44.781]     at t (/vercel/path0/.next/server/webpack-runtime.js:1:127)
+[12:30:44.781]     at 83566 (/vercel/path0/.next/server/chunks/764.js:1:6206)
+[12:30:44.781]     at Function.t (/vercel/path0/.next/server/webpack-runtime.js:1:127)
+[12:30:44.781]     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[12:30:44.781]     at async collectGenerateParams (/vercel/path0/node_modules/next/dist/build/utils.js:919:21) {
+[12:30:44.781]   clientVersion: '5.9.1',
+[12:30:44.781]   errorCode: undefined
+[12:30:44.781] }
+[12:30:44.783] 
+[12:30:44.783] > Build error occurred
+[12:30:44.784] Error: Failed to collect page data for /admin/accounts
+[12:30:44.784]     at /vercel/path0/node_modules/next/dist/build/utils.js:1258:15
+[12:30:44.784]     at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+[12:30:44.784]   type: 'Error'
+[12:30:44.785] }
+[12:30:44.819] Error: Command "npm run build" exited with 1
+[12:30:45.111] 
+```
+
+아마 프로젝트에 사용한 `Prisma` ORM 관련 오류인 것으로 추정된다. 다행히 친절하게 해결방안에 대한 링크까지 제공하고 있어서 참고하여 수정한 후에 다시 진행하였다.
