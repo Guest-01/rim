@@ -376,7 +376,7 @@ Vercel에 Github로 회원가입을 하고 프로젝트를 Import하면 바로 �
 
 타입 체크는 `npm run dev`를 할 때는 진행되지 않아서 미리 확인을 못했던 것 같다. 일일이 `npm run build`를 해보면서 타입 오류가 안나올 때까지 수정하였고 다시 시도해보았다.
 
-### Prisma 오류 발생
+##### Prisma 오류 발생
 
 타입 오류를 수정한 뒤에 main 브랜치에 푸시하였더니 자동으로 다시 배포가 진행되었음. 그러나 다시 아래와 같은 오류가 발생하였음:
 
@@ -413,7 +413,7 @@ Vercel에 Github로 회원가입을 하고 프로젝트를 Import하면 바로 �
 
 아마 프로젝트에 사용한 `Prisma` ORM 관련 오류인 것으로 추정된다. 다행히 친절하게 해결방안에 대한 링크까지 제공하고 있어서 참고하니 Vercel의 빌드 캐시 때문에 prisma client가 outdated되는 문제가 있다고 한다. 제안된 해결 방법에 따라 npm script에 `postinstall`을 추가해주고 다시 진행해보았다.
 
-### DATABASE_URL 환경 변수 누락
+#### DATABASE_URL 환경 변수 누락
 
 이번에도 오류가 났는데... 데이터베이스 URL이 담긴 환경 변수를 못찾았다는 에러였다.
 
@@ -425,7 +425,7 @@ error: Environment variable not found: DATABASE_URL.
 
 처음에 가입하고 첫 빌드때 환경 변수를 넣어주었는데, 아마 해당 빌드에만 적용되고 이후 빌드에서는 적용이 안되었던 것 같다. 프로젝트 대시보드에서 세팅에 들어가면 아예 프로젝트 전역으로 설정할 수 있는 environment variables 설정이 있기에 거기에다가 다시 설정해주고 `Redeploy` 해보았다.
 
-### 초기 DB Migration 및 Seeding 필요
+#### 초기 DB Migration 및 Seeding 필요
 
 이번에는 테이블이 없다는 에러가 발생했습니다.
 
@@ -439,7 +439,7 @@ error: Environment variable not found: DATABASE_URL.
 "postinstall": "prisma generate && prisma migrate deploy"
 ```
 
-### 🚨 뒤늦게 발견한 sqlite 미지원 사실
+### 🚨 뒤늦게 발견한 sqlite 미지원 사실 🚨
 
 위처럼 하고 main 브랜치에 푸시하여 빌드를 진행해보니 빌드할 때는 에러가 없었는데 `Runtime Log`를 확인해보니 아래와 같이 에러가 발생:
 
@@ -454,3 +454,42 @@ Error querying the database: Error code 14: Unable to open the database file
 대신 Vercel Postgres를 이용하라고 하는데 막상 링크를 들어가보면 해당 이름으로는 없고 Neon이라는 클라우드 DB가 가장 최상단에 뜸. Vercel에서는 Next.js를 배포할 때 일반 서버를 제공하는 것이 아니라 Serverless 방식으로 운영하는 것으로 보임. 따라서 파일 시스템에 접근해야하는 sqlite를 사용할 수 없는 것으로 보임.
 
 다른 배포처를 찾거나 아니면 클라우드 Postgres 서비스로 이전을 시도해야할 것으로 보임.
+
+### Postgres로 이전
+
+Vercel Postgres가 이제는 Market Place에서 제공하는 Neon Database로 변경되었음. 하지만 여전히 손쉽게 추가가 가능하기 때문에 바로 진행함.
+
+Neon을 추가하면 마지막 단계에서 자동으로 Vercel Environments에 등록을 해줌. (`develop`, `preview`, `production` 세 곳 모두) 따라서 로컬에서 개발할 때만 `.env`파일에 직접 `DATABASE_URL`을 넣어주고, 배포할 때는 신경쓰지 않아도 됨.
+
+그리고 `schema.prisma` 파일에서 `provider`를 `postgres`로 변경해주었음. 이제 푸시를 하고 빌드를 해보니 아래와 같이 기존 migration들이 호환이 안되어서 오류가 발생함:
+
+```
+The datasource provider `postgresql` specified in your schema does not match the one specified in the migration_lock.toml, `sqlite`. Please remove your current migration directory and start a new migration history with prisma migrate dev. Read more: https://pris.ly/d/migrate-provider-switch
+```
+
+해결 방안은 migration 폴더를 날려버리고 새로 시작하는 것이라고 함. 어짜피 과거 마이그레이션으로 롤백할 일이 없으므로 삭제 후 진행.
+
+#### Prisma Migrate 사용 시 Direct URL 필요 (without-pooler)
+
+migration 폴더를 날려버리고 다시 `npx prisma migrate dev`를 실행했더니 아래와 같이 에러 발생:
+
+```
+Error: ERROR: database "prisma_migrate_shadow_db_8064c486-c8a0-4456-8844-444909fcb460" is being accessed by other users
+DETAIL: There is 1 other session using the database.
+   0: schema_core::state::DevDiagnostic
+             at schema-engine/core/src/state.rs:267
+```
+
+이럴 때를 위해 `DIRECT_URL`이라는 방식으로 연결이 필요하다고 함. (출처: https://github.com/prisma/prisma/issues/22845#issuecomment-2198244195)
+
+기존에 Vercel에서 복사한 `.env` 값 중에 `DATABASE_URL_UNPOOLED`가 바로 이 값에 해당함. 해당 `ENV` 값을 아래와 같이 `schema.prisma` 파일에 추가함.
+
+```
+datasource db {
+  provider  = "postgresql"
+  url  	    = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+```
+
+그리고 다시 `npx prisma migrate dev`를 실행하니 정상적으로 마이그레이션이 생성됨.
