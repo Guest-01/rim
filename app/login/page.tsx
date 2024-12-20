@@ -12,10 +12,10 @@ export default function Login() {
       <div className="card-body">
         <form action={formAction} className="form-control">
           <label htmlFor="email" className="label label-text">이메일</label>
-          <input type="email" name="email" placeholder="id@domain.com" className="input input-sm input-bordered" required />
+          <input type="email" name="email" placeholder="id@domain.com" className="input input-sm input-bordered" required value={"test1@test.com"} />
           <label htmlFor="password" className="label label-text">비밀번호</label>
           <input type="password" pattern="(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9!@#$%^&*,.?;~]{6,16}"
-            title="6~16자리의 알파벳과 숫자 조합이 필요합니다" name="password" placeholder="******" className="input input-sm input-bordered" required />
+            title="6~16자리의 알파벳과 숫자 조합이 필요합니다" name="password" placeholder="******" className="input input-sm input-bordered" required value={"admin123!"} />
           <div className="my-2 text-center text-error">{errMsg}</div>
           <SubmitBtn />
         </form>
