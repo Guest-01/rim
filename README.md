@@ -3,6 +3,10 @@
 > 일감 관리 도구
 > https://rim-hh.vercel.app/
 
+### 스크린샷
+
+![](./image.png)
+
 ### 기술 스택
 
 - NextJS 14 (with App Router)
