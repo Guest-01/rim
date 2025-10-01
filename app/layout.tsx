@@ -19,7 +19,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const user = await prisma.account.findFirst({ where: { id: session?.accountId } });
   
   return (
-    <html lang="en">
+    <html lang="en" data-theme="rim">
       <body className={noto.className}>
         <NavBar />
         {/* 전체 화면에서 헤더(4rem)과 헤더의 아랫 보더(1px)를 뺀 값이 높이 */}

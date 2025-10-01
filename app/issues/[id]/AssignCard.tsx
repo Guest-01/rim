@@ -8,7 +8,7 @@ type IssueWithIncludes = Prisma.IssueGetPayload<{ include: { author: true, assig
 
 export default function AssignCard({ issue, session, accounts }: { issue: IssueWithIncludes, session: { accountId: number; expires: Date; }, accounts: Account[] }) {
   const notAcceptedYet = issue.status.value === "대기" && issue.assigneeId === session.accountId;
-  const [selectedAssignee, setSelectedAssignee] = useState<string>();
+  const [selectedAssignee, setSelectedAssignee] = useState<string>(accounts[0]?.id.toString() || "");
 
   return (
     <div className="card card-bordered border-base-300 shadow card-compact">
@@ -39,7 +39,7 @@ export default function AssignCard({ issue, session, accounts }: { issue: IssueW
             ))}
           </select>
           <span className="tooltip" data-tip="담당자를 변경하면 대기 상태로 돌아갑니다">
-            <button className="btn btn-sm" onClick={() => assignTo(issue.id, parseInt(selectedAssignee!))}>로/으로 변경하기</button>
+            <button className="btn btn-sm" onClick={() => assignTo(issue.id, parseInt(selectedAssignee))} disabled={!selectedAssignee}>로/으로 변경하기</button>
           </span>
         </div>
       </div>

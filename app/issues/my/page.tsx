@@ -31,9 +31,17 @@ export default async function Issues({ searchParams }: { searchParams: { [key: s
       <div className="card card-bordered border-base-300 shadow pb-2">
         <FilterHeader presets={presets} selectOptions={selectOptions} />
         <table className="table table-sm table-fixed">
-          <thead>
+          <colgroup>
+            <col className="w-16" />
+            <col className="w-48" />
+            <col />
+            <col className="w-24" />
+            <col className="w-32" />
+            <col className="w-48" />
+          </colgroup>
+          <thead className="bg-base-200">
             <tr>
-              <th className="w-12">#</th>
+              <th>#</th>
               <th>프로젝트</th>
               <th>제목</th>
               <th>상태</th>

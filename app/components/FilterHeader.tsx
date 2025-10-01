@@ -22,12 +22,12 @@ export default function FilterHeader({ presets, selectOptions }: FilterHeaderPro
             <path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clipRule="evenodd" />
           </svg>
         </Link>}
-        {searchParams?.has("filter_by") && <div className="btn btn-sm rounded-full btn-active">{searchParams?.get("filter_by")}:{searchParams?.get("filter_text")}</div>}
+        {searchParams?.has("filter_by") && <div className="btn btn-sm rounded-full btn-primary">{searchParams?.get("filter_by")}:{searchParams?.get("filter_text")}</div>}
         {presets.map(preset =>
           <Link
             key={preset.href}
             href={preset.href}
-            className={clsx("btn btn-sm rounded-full", { "btn-active": isCurrent(preset.href) })}
+            className={clsx("btn btn-sm rounded-full", { "btn-primary": isCurrent(preset.href) })}
           >
             {preset.title}
           </Link>)}

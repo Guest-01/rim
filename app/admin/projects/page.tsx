@@ -23,7 +23,7 @@ export default async function ProjectsAdmin() {
       <div className="card card-bordered border-base-300 shadow pb-2">
         <FilterHeader presets={presets} selectOptions={selectOptions} />
         <table className="table table-sm table-fixed">
-          <thead>
+          <thead className="bg-base-200">
             <tr>
               <th className="w-12">#</th>
               <th>프로젝트명</th>
