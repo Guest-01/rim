@@ -488,3 +488,17 @@ datasource db {
 그리고 다시 `npx prisma migrate dev`를 실행하니 정상적으로 마이그레이션이 생성됨. 이후 정상 빌드 및 동작 확인.
 
 > 💡 최종 배포 URL: https://rim-hh.vercel.app/
+
+## 배포 후 유지보수 (with Claude Code 🤖)
+
+### react에서 input에 초기값을 주고 싶은 경우
+
+> https://ko.react.dev/reference/react-dom/components/input#providing-an-initial-value-for-an-input
+
+오랜만에 다시 코드를 실행시켜봤더니 아래와 같은 경고가 발생하는 것을 발견함.
+
+```
+Warning: You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`.
+```
+
+알고보니 리액트에서는 초기값을 주고 싶다면 `value`가 아닌 `defaultValue`에 넣어주어야 함. 일반적인 HTML에는 `defaultValue`라는 프로퍼티가 없기 때문에 생각을 못했음.
