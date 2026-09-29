@@ -506,3 +506,19 @@ Warning: You provided a `value` prop to a form field without an `onChange` handl
 ```
 
 알고보니 리액트에서는 초기값을 주고 싶다면 `value`가 아닌 `defaultValue`에 넣어주어야 함. 일반적인 HTML에는 `defaultValue`라는 프로퍼티가 없기 때문에 생각을 못했음.
+
+### `postinstall` 스크립트의 `&` 오타 수정
+
+`2024.12.13` 배포 당시 시드 명령을 추가하면서(`14764b9`) `&&`를 `&` 하나로 잘못 입력한 것을 뒤늦게 발견함.
+
+```
+"postinstall": "prisma generate && prisma migrate deploy & prisma db seed"  // 수정 전
+"postinstall": "prisma generate && prisma migrate deploy && prisma db seed" // 수정 후
+```
+
+`&&`는 앞 명령이 성공해야 다음 명령을 실행하지만, `&`는 쉘에 따라 동작이 달라짐.
+
+- **Linux/macOS (sh, Vercel 빌드 환경)**: 앞 명령을 백그라운드로 보내고 다음 명령을 바로 실행함. 즉 `migrate deploy`와 `db seed`가 동시에 실행되어, 마이그레이션이 끝나기 전에 시드가 새 테이블/컬럼에 접근하다 실패할 수 있음. 또 마이그레이션이 실패해도 빌드가 그대로 진행됨.
+- **Windows (cmd)**: 앞 명령의 성공 여부와 상관없이 순차 실행함. 그래서 로컬(Windows)에서는 문제가 드러나지 않았음.
+
+그동안 새로운 마이그레이션이 추가되지 않아 `migrate deploy`가 즉시 끝났기 때문에 실제 문제로 이어지지는 않았지만, 다음 스키마 변경 시 배포가 깨질 수 있었던 부분이라 수정함.
