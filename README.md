@@ -522,3 +522,82 @@ Warning: You provided a `value` prop to a form field without an `onChange` handl
 - **Windows (cmd)**: 앞 명령의 성공 여부와 상관없이 순차 실행함. 그래서 로컬(Windows)에서는 문제가 드러나지 않았음.
 
 그동안 새로운 마이그레이션이 추가되지 않아 `migrate deploy`가 즉시 끝났기 때문에 실제 문제로 이어지지는 않았지만, 다음 스키마 변경 시 배포가 깨질 수 있었던 부분이라 수정함.
+
+### 브랜치 전략: `main` + `dev`
+
+Vercel은 `main`에 푸시하면 곧바로 Production 배포가 되기 때문에, 작업용 `dev` 브랜치를 따로 두기로 함. 혼자 개발하는 프로젝트라 fix/feature마다 브랜치를 만드는 것은 관리가 번거로워서 브랜치 2개로만 운영함.
+
+| 브랜치 | 역할 | Vercel 동작 |
+|---|---|---|
+| `main` | 운영 배포 전용 (직접 커밋하지 않음) | 푸시 시 Production 배포 |
+| `dev` | 평소 작업 브랜치 | 푸시 시 Preview 배포 |
+
+- 평소에는 `dev`에 커밋/푸시하고, Preview URL에서 확인한 뒤 `main`에 머지(fast-forward)하여 운영에 반영함.
+- 별도 설정 없이도 Vercel은 `main`이 아닌 브랜치를 모두 Preview로 배포함. `dev` 브랜치에는 고정 Preview URL(`rim-git-dev-<계정>.vercel.app` 형태)이 생겨서 사실상 스테이징처럼 쓸 수 있음.
+- 이름은 Git Flow 전체(`release/*`, `hotfix/*` 등)를 도입하는 것이 아니므로 `develop` 대신 `dev`로 함.
+
+### Preview/로컬용 DB 분리 (Neon 브랜치)
+
+기존에는 Neon 연동이 `DATABASE_URL`을 Production/Preview/Development 세 환경 모두에 등록해두어서, Preview 빌드(`postinstall`의 `migrate deploy`, `db seed`)와 로컬 개발이 전부 운영 DB를 사용하고 있었음. 데모 앱이라 데이터 자체는 상관없지만, `dev`에서 스키마를 바꾸면 머지 전부터 운영 사이트가 깨질 수 있고, 로컬에서 `prisma migrate dev`의 DB 초기화(reset) 제안을 실수로 수락하면 운영 데이터가 날아갈 수 있어서 분리함.
+
+DB를 환경마다 만들면 관리 포인트가 늘어나므로, Neon 브랜치 하나(`preview`)를 만들어 **Preview 배포와 로컬 개발이 함께 쓰도록** 함.
+
+| 환경 | DB |
+|---|---|
+| Production (`main`) | Neon `main` 브랜치 (운영 DB) |
+| Preview (`dev`) | Neon `preview` 브랜치 |
+| 로컬 개발 (Development) | Neon `preview` 브랜치 |
+
+#### 1. Neon 브랜치 생성
+
+Vercel → Storage → DB → `Open in Neon`으로 Neon 콘솔에 진입 (별도 로그인 불필요). Branches → New Branch에서 아래와 같이 생성함.
+
+- Name: `preview`
+- **Auto-delete: `Never`** (기본값이 `After 1 day`라서 그대로 두면 하루 뒤 삭제되어버림!)
+- Parent branch: `main`
+- `Branch data and schema` 선택 (운영 데이터를 그대로 복사)
+
+Neon 브랜치는 copy-on-write 방식이라 생성 즉시 운영 데이터를 가진 채로 시작하고, 변경분만 저장 공간을 사용함. 데이터가 꼬이면 `Reset from parent`로 운영 상태로 되돌릴 수 있음.
+
+생성 후 Connect에서 두 가지 연결 문자열을 확인할 수 있음. 이때 Neon은 "Prisma 5.10 미만일 때만 `DATABASE_URL_UNPOOLED` 주석 해제"라고 안내하는데, 이 프로젝트는 Prisma `5.9.1`이므로 두 값 모두 필요함. (`schema.prisma`에는 이미 `directUrl`이 설정되어 있어서 수정 불필요)
+
+- `DATABASE_URL`: 호스트에 `-pooler`가 붙은 주소 (앱에서 사용)
+- `DATABASE_URL_UNPOOLED`: `-pooler`가 없는 직접 연결 주소 (마이그레이션에서 사용)
+
+#### 2. Vercel 환경 변수 분리
+
+바로 Preview/Development용 변수를 추가하려고 하니 아래와 같은 에러가 발생함.
+
+```
+A variable with the name `DATABASE_URL` already exists for the target production,preview,development on branch undefined.
+```
+
+기존 변수가 세 환경 모두에 걸려 있어서 같은 이름을 추가할 수 없는 것. 그런데 Neon 연동이 관리하는 변수(Neon 아이콘 표시)라서 메뉴에 `Edit`이 없음. 대신 `Manage Connection`에서 연동의 연결 환경을 **Production만** 남기고 Preview/Development를 해제함. 그러면 `PGHOST`, `POSTGRES_*` 등 Neon 변수 전체가 Production 전용이 됨.
+
+그 다음 `DATABASE_URL`, `DATABASE_URL_UNPOOLED`를 `preview` 브랜치 값으로 **Preview, Development** 환경에 새로 추가함.
+
+변경 후 "Redeploy해야 반영된다"는 안내가 나오는데, Production은 값이 그대로(적용 범위만 축소)이고 `dev`는 아직 배포 전이므로 재배포는 필요 없음. 환경 변수는 다음 배포부터 적용됨.
+
+> 💡 `Rotate Integration Secrets`는 운영 DB 비밀번호를 재발급하는 기능이라, 누르면 재배포 전까지 운영 사이트의 DB 연결이 끊길 수 있으니 주의.
+
+#### 3. 로컬 `.env` 받기 (Vercel CLI)
+
+Vercel Development 환경 변수가 `preview` 브랜치를 가리키게 되었으므로, 로컬 `.env`는 Vercel CLI로 받아오면 됨. 그동안 Github 연동으로만 배포해서 CLI가 설치되어 있지 않았음.
+
+```bash
+npm i -g vercel
+vercel login
+vercel link          # 기존 프로젝트(rim)에 연결, .vercel/ 폴더 생성 (gitignore 되어 있음)
+vercel env pull .env # Development 환경 변수로 .env 생성
+```
+
+> 💡 Windows PowerShell에서 "스크립트를 실행할 수 없으므로..." 에러가 나면 `vercel` 대신 `vercel.cmd`로 실행하면 됨.
+
+받아온 `.env`의 `DATABASE_URL` 호스트가 운영 DB가 아닌 `preview` 브랜치의 엔드포인트인지 꼭 확인할 것. 참고로 `vercel env pull` 시 `.gitignore`에 `.env*`가 자동으로 추가됨. 나중에 `.env.example` 같은 파일을 커밋하려면 `!.env.example` 예외를 추가해야 함.
+
+이후 로컬 개발은 아래 순서로 진행함. (`npm install` 시 `postinstall`이 `preview` DB에 migrate/seed를 실행함)
+
+```bash
+npm install
+npm run dev
+```
