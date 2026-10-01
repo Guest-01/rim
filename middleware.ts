@@ -3,7 +3,8 @@ import { getSession, updateSession } from "./app/lib/auth";
 
 export const config = {
   matcher: [
-    '/((?!login|signup|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
+    // api/pending-count: 사이드바 배지 polling 요청이 세션을 계속 연장하지 않도록 제외 (인증은 핸들러에서 직접 확인)
+    '/((?!login|signup|api/pending-count|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
   ],
 };
 

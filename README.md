@@ -344,6 +344,8 @@ NextJS 13부터 도입된 App Router에서는 `Response` 객체가 fetch API쪽�
 
 `2024.11.13` 현재 대기 일감 실시간 개수 표시 기능은 보류 중 (SSE 알림을 트리거하는 방법을 찾지 못함) 일단은 커스텀 훅으로 래핑해놓고 보류.
 
+> `2026.10.01` polling 방식으로 구현 완료. 하단 "대기 일감 배지: SSE 대신 polling으로 구현" 참고.
+
 ## 배포 🚀
 
 ### `2024.12.13` Vercel에 첫 배포 시도 (Type Error 발생)
@@ -601,3 +603,15 @@ vercel env pull .env # Development 환경 변수로 .env 생성
 npm install
 npm run dev
 ```
+
+### 대기 일감 배지: SSE 대신 polling으로 구현
+
+보류했던 "대기 일감 실시간 개수 표시하기"(위 섹션 참고)를 polling 방식으로 구현함. 기존 SSE 코드(`pages/api/sse.ts`, `app/hooks/useSSE.ts`)는 쓰이는 곳이 없어 삭제함. Vercel 같은 서버리스 환경에서는 인스턴스 간 이벤트 전달이 어려운 SSE보다, 몇 초 늦어도 괜찮은 알림 개수에는 polling이 단순하고 충분함.
+
+- `app/api/pending-count/route.ts`: 대기 일감 개수를 반환하는 API
+- `app/hooks/usePendingCount.ts`: 30초마다 polling. 탭이 숨겨져 있으면 멈추고, 탭 복귀나 페이지 이동 시 즉시 갱신
+- `app/layout.tsx`: 첫 화면용 초기값을 서버에서 계산해 전달
+
+> 💡 polling 요청이 미들웨어를 거치면 30초마다 세션이 연장되어 로그아웃되지 않으므로, `api/pending-count`는 matcher에서 제외하고 핸들러에서 직접 인증함.
+
+배지 숫자는 누적 알림이 아니라 **현재 나에게 할당된 '대기' 상태 일감 수**임. 수락, 거절, 담당자 변경 시 줄어들고 0이면 사라짐. 색상은 `badge-error`가 너무 강렬해서 `bg-primary/10 text-primary`로 변경함.

@@ -3,11 +3,15 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { usePendingCount } from "../hooks/usePendingCount";
 
-export default function SideBar({ isAdmin }: { isAdmin: boolean }) {
+export default function SideBar({ isAdmin, pendingCount }: { isAdmin: boolean; pendingCount: number }) {
   const pathname = usePathname();
+  const isAuthPage = pathname?.includes("login") || pathname?.includes("signup");
+  // 훅은 조건부로 호출할 수 없으므로 early return 전에 호출하고, 로그인/가입 페이지에서는 polling만 끔
+  const pendings = usePendingCount(pendingCount, !isAuthPage, pathname);
 
-  if (pathname?.includes("login") || pathname?.includes("signup")) {
+  if (isAuthPage) {
     return null;
   }
 
@@ -54,7 +58,13 @@ export default function SideBar({ isAdmin }: { isAdmin: boolean }) {
             <li>
               <Link href="/issues/pending" className={clsx({ "active": pathname === "/issues/pending" })}>
                 대기 일감
-                {/* <div className="badge badge-error text-base-100">{pendings}</div> */}
+                {pendings > 0 && (
+                  <div className={clsx("badge badge-sm border-0 font-semibold", pathname === "/issues/pending"
+                    ? "bg-neutral-content/20 text-neutral-content" // 선택된 메뉴(어두운 배경)에서는 밝은 톤으로
+                    : "bg-primary/10 text-primary")}>
+                    {pendings}
+                  </div>
+                )}
               </Link>
             </li>
             <li>
